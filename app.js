@@ -24,7 +24,7 @@ buttons.forEach((button) => {
 
 // --- PRICES & STORAGE ---
 
-const DEFAULT_PRICES = { milk: 50, lben: 60 };
+const DEFAULT_PRICES = { milk: 345, lben: 1200 };
 
 // Read saved prices or return defaults
 function getPrices() {
