@@ -106,7 +106,9 @@
     <div class="modal-content card">
       <h2 id="modal-client-name">Client Name</h2>
       
-        <div class="form-group row-form">
+      <div id="modal-reminders" style="display: flex; gap: 8px; justify-content: center; margin-bottom: 16px; flex-wrap: wrap;"></div>
+        
+      <div class="form-group row-form">
         <label>Milk (Funds):</label>
         <div class="qty-control">
           <button type="button" id="milk-minus" class="qty-btn">-</button>
@@ -145,7 +147,7 @@
 <!-- Direct Remaining Funds Input -->
 <!-- Remaining Funds with +/- -->
 <div class="form-group row-form">
-  <label>Remaining Funds:</label>
+  <label>Empty Crates (Fonds):</label>
   <div class="qty-control">
     <button type="button" id="funds-minus" class="qty-btn">-</button>
     <input type="number" id="sale-remaining-funds" placeholder="0" min="0">
@@ -153,13 +155,23 @@
   </div>
 </div>
 
-<!-- Tomorrow's Qty with +/- -->
+<!-- Tomorrow Milk -->
 <div class="form-group row-form">
-  <label>Tomorrow's Qty:</label>
+  <label>Tomorrow Milk:</label>
   <div class="qty-control">
-    <button type="button" id="tomorrow-minus" class="qty-btn">-</button>
-    <input type="number" id="sale-tomorrow-qty" placeholder="0" min="0">
-    <button type="button" id="tomorrow-plus" class="qty-btn">+</button>
+    <button type="button" id="tomorrow-milk-minus" class="qty-btn">-</button>
+    <input type="number" id="sale-tomorrow-milk" placeholder="0" min="0">
+    <button type="button" id="tomorrow-milk-plus" class="qty-btn">+</button>
+  </div>
+</div>
+
+<!-- Tomorrow Lben -->
+<div class="form-group row-form">
+  <label>Tomorrow Lben:</label>
+  <div class="qty-control">
+    <button type="button" id="tomorrow-lben-minus" class="qty-btn">-</button>
+    <input type="number" id="sale-tomorrow-lben" placeholder="0" min="0">
+    <button type="button" id="tomorrow-lben-plus" class="qty-btn">+</button>
   </div>
 </div>
 

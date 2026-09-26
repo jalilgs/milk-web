@@ -2,6 +2,33 @@
 const buttons = document.querySelectorAll('.tab-button');
 const screens = document.querySelectorAll('.screen');
 
+// ===== TEMPORARY TOMORROW MODE =====
+(() => {
+    const RealDate = Date;
+
+    class FakeDate extends RealDate {
+        constructor(...args) {
+            if (args.length === 0) {
+                super(RealDate.now() + 86400000);
+            } else {
+                super(...args);
+            }
+        }
+
+        static now() {
+            return RealDate.now() + 86400000;
+        }
+    }
+
+    FakeDate.parse = RealDate.parse;
+    FakeDate.UTC = RealDate.UTC;
+
+    globalThis.Date = FakeDate;
+
+    console.log("Tomorrow mode enabled:", new Date().toString());
+})();
+// // ===== END TEMPORARY TOMORROW MODE =====
+
 function showScreen(targetId) {
   screens.forEach((screen) => {
     screen.classList.toggle('active', screen.id === targetId);
@@ -211,6 +238,10 @@ if (addClientBtn) {
   });
 }
 
+let clearPastCratesFlag = false;
+let clearPastDebtFlag = false;
+let lastSaleIdForCrates = null;
+
 // --- DAILY SALES INTERFACE ---
 let currentSelectedClientId = null;
 let currentSaleId = null;
@@ -220,7 +251,6 @@ const milkQtyInput = document.getElementById('sale-milk-qty');
 const lbenQtyInput = document.getElementById('sale-lben-qty');
 const totalPriceLabel = document.getElementById('sale-total-price');
 const paidAmountInput = document.getElementById('sale-paid-amount');
-const tomorrowQtyInput = document.getElementById('sale-tomorrow-qty');
 const remainingFundsInput = document.getElementById('sale-remaining-funds');
 const remainingMoneyLabel = document.getElementById('sale-remaining-money');
 const fullPayBtn = document.getElementById('full-pay-btn');
@@ -231,6 +261,17 @@ function isToday(dateString) {
   return d.getDate() === today.getDate() &&
          d.getMonth() === today.getMonth() &&
          d.getFullYear() === today.getFullYear();
+}
+
+function isYesterday(dateString) {
+  const d = new Date(dateString);
+  const today = new Date();
+  const yesterday = new Date(today);
+  yesterday.setDate(yesterday.getDate() - 1);
+  
+  return d.getDate() === yesterday.getDate() &&
+         d.getMonth() === yesterday.getMonth() &&
+         d.getFullYear() === yesterday.getFullYear();
 }
 
 function renderDailyClients() {
@@ -356,8 +397,121 @@ function openSaleModal(clientId, clientName) {
   lbenQtyInput.value = todaySale ? todaySale.lbenQty : '';
   paidAmountInput.value = todaySale ? todaySale.paidAmount : '';
   
-  remainingFundsInput.value = todaySale ? (todaySale.remainingFunds || '') : (lastSale ? (lastSale.remainingFunds || '') : '');
-  tomorrowQtyInput.value = todaySale ? (todaySale.tomorrowQty || '') : (lastSale ? (lastSale.tomorrowQty || '') : '');
+// NEW LOGIC: Only load today's inputs if editing today's entry. DO NOT auto-fill fields with past data.
+  remainingFundsInput.value = todaySale ? (todaySale.remainingFunds || '') : '';
+  tomorrowMilkInput.value = todaySale ? (todaySale.tomorrowMilk || '') : '';
+  tomorrowLbenInput.value = todaySale ? (todaySale.tomorrowLben || '') : '';
+
+  // Reset clear flags every time the modal opens
+  clearPastCratesFlag = false;
+  clearPastDebtFlag = false;
+  lastSaleIdForCrates = lastSale ? lastSale.id : null;
+
+  // GENERATE REMINDER CLOUDS
+  const remindersContainer = document.getElementById('modal-reminders');
+  if (remindersContainer) {
+    remindersContainer.innerHTML = ''; 
+
+    if (lastSale && !todaySale) {
+      // 1. Quantity Reminder
+      if (isYesterday(lastSale.date)) {
+        const tMilk = lastSale.tomorrowMilk || 0;
+        const tLben = lastSale.tomorrowLben || 0;
+        if (tMilk > 0 || tLben > 0) {
+          const qtyCloud = document.createElement('div');
+          qtyCloud.className = 'reminder-cloud blue-cloud';
+          qtyCloud.innerHTML = `🛒 Planned: <strong>${tMilk} Milk</strong> | <strong>${tLben} Lben</strong>`;
+          remindersContainer.appendChild(qtyCloud);
+        }
+      }
+
+      // 2. Empty Crates (Fonds) Reminder 
+      const remCrates = lastSale.remainingFunds || 0;
+      if (remCrates > 0) {
+        const crateCloud = document.createElement('div');
+        crateCloud.className = 'reminder-cloud orange-cloud';
+        crateCloud.innerHTML = `
+          📦 Owes: <strong>${remCrates} Empties</strong>
+          <button class="check-funds-btn" title="Mark empties as returned">✔</button>
+        `;
+        
+        crateCloud.querySelector('.check-funds-btn').onclick = () => {
+          clearPastCratesFlag = true; // Queue for saving
+          crateCloud.style.background = '#e8e8e8';
+          crateCloud.style.borderColor = '#ccc';
+          crateCloud.style.color = '#555';
+          crateCloud.innerHTML = `✅ Empties returning (Click Save)`;
+        };
+        remindersContainer.appendChild(crateCloud);
+      }
+    }
+
+    // 3. Remaining Money (Debt) Reminder 
+    const totalDebt = pastSales.reduce((sum, s) => {
+      const sTotal = parseFloat(s.totalAmount) || 0;
+      const sPaid = parseFloat(s.paidAmount) || 0;
+      return sum + Math.max(0, sTotal - sPaid);
+    }, 0);
+    
+    if (totalDebt > 0) {
+      const debtCloud = document.createElement('div');
+      debtCloud.className = 'reminder-cloud red-cloud';
+      debtCloud.innerHTML = `
+        💰 Debt: <strong>${totalDebt} DA</strong>
+        <button class="check-funds-btn" title="Mark all past debt as paid">✔</button>
+      `;
+      
+      debtCloud.querySelector('.check-funds-btn').onclick = () => {
+        clearPastDebtFlag = true; // Queue for saving
+        debtCloud.style.background = '#e8e8e8';
+        debtCloud.style.borderColor = '#ccc';
+        debtCloud.style.color = '#555';
+        debtCloud.innerHTML = `✅ Debt paying (Click Save)`;
+      };
+      remindersContainer.appendChild(debtCloud);
+    }
+  }
+
+    // 3. Remaining Money (Debt) Reminder 
+    // Calculates total unpaid money from ALL past sales for this client
+    const totalDebt = pastSales.reduce((sum, s) => {
+      const sTotal = parseFloat(s.totalAmount) || 0;
+      const sPaid = parseFloat(s.paidAmount) || 0;
+      return sum + Math.max(0, sTotal - sPaid);
+    }, 0);
+    
+    // Shows up even if there is a todaySale, so you always know their debt balance
+    if (totalDebt > 0) {
+      const debtCloud = document.createElement('div');
+      debtCloud.className = 'reminder-cloud red-cloud';
+      debtCloud.innerHTML = `
+        💰 Debt: <strong>${totalDebt} DA</strong>
+        <button class="check-funds-btn" title="Mark all past debt as paid">✔</button>
+      `;
+      
+      debtCloud.querySelector('.check-funds-btn').onclick = () => {
+        const savedSalesStr = localStorage.getItem('milk_app_sales');
+        if (savedSalesStr) {
+          let allSales = JSON.parse(savedSalesStr);
+          // Mark all unpaid past sales for this client as fully paid
+          allSales.forEach(s => {
+            if (s.clientId === clientId) {
+              const sTotal = parseFloat(s.totalAmount) || 0;
+              const sPaid = parseFloat(s.paidAmount) || 0;
+              if (sTotal > sPaid) {
+                s.paidAmount = sTotal; // Settle the debt in the database
+              }
+            }
+          });
+          localStorage.setItem('milk_app_sales', JSON.stringify(allSales));
+        }
+        debtCloud.remove();
+        renderDailyClients(); // Updates the client grid behind the modal instantly
+        renderHistoryScreen(); // Updates the history lists
+      };
+      remindersContainer.appendChild(debtCloud);
+    }
+  
 
   updateCalculations();
   saleModal.classList.add('active');
@@ -405,8 +559,14 @@ const lbenPlus = document.getElementById('lben-plus');
 
 const fundsMinus = document.getElementById('funds-minus');
 const fundsPlus = document.getElementById('funds-plus');
-const tomorrowMinus = document.getElementById('tomorrow-minus');
-const tomorrowPlus = document.getElementById('tomorrow-plus');
+
+const tomorrowMilkInput = document.getElementById('sale-tomorrow-milk');
+const tomorrowLbenInput = document.getElementById('sale-tomorrow-lben');
+
+const tomorrowMilkMinus = document.getElementById('tomorrow-milk-minus');
+const tomorrowMilkPlus = document.getElementById('tomorrow-milk-plus');
+const tomorrowLbenMinus = document.getElementById('tomorrow-lben-minus');
+const tomorrowLbenPlus = document.getElementById('tomorrow-lben-plus');
 
 if (milkMinus) milkMinus.addEventListener('click', () => handleQtyBtn(milkQtyInput, -1));
 if (milkPlus) milkPlus.addEventListener('click', () => handleQtyBtn(milkQtyInput, 1));
@@ -415,8 +575,11 @@ if (lbenPlus) lbenPlus.addEventListener('click', () => handleQtyBtn(lbenQtyInput
 
 if (fundsMinus) fundsMinus.addEventListener('click', () => handleQtyBtn(remainingFundsInput, -1));
 if (fundsPlus) fundsPlus.addEventListener('click', () => handleQtyBtn(remainingFundsInput, 1));
-if (tomorrowMinus) tomorrowMinus.addEventListener('click', () => handleQtyBtn(tomorrowQtyInput, -1));
-if (tomorrowPlus) tomorrowPlus.addEventListener('click', () => handleQtyBtn(tomorrowQtyInput, 1));
+
+if (tomorrowMilkMinus) tomorrowMilkMinus.addEventListener('click', () => handleQtyBtn(tomorrowMilkInput, -1));
+if (tomorrowMilkPlus) tomorrowMilkPlus.addEventListener('click', () => handleQtyBtn(tomorrowMilkInput, 1));
+if (tomorrowLbenMinus) tomorrowLbenMinus.addEventListener('click', () => handleQtyBtn(tomorrowLbenInput, -1));
+if (tomorrowLbenPlus) tomorrowLbenPlus.addEventListener('click', () => handleQtyBtn(tomorrowLbenInput, 1));
 
 // Save Sale Transaction
 const saveSaleBtn = document.getElementById('save-sale-btn');
@@ -429,7 +592,8 @@ if (saveSaleBtn) {
     const lQty = parseFloat(lbenQtyInput.value) || 0;
     const totalAmount = (mQty * prices.milk) + (lQty * prices.lben);
     const paidAmount = parseFloat(paidAmountInput.value) || 0;
-    const tomorrowQty = parseFloat(tomorrowQtyInput.value) || 0;
+    const tomorrowMilk = parseInt(tomorrowMilkInput.value) || 0;
+    const tomorrowLben = parseInt(tomorrowLbenInput.value) || 0;
     const remFunds = parseFloat(remainingFundsInput.value) || 0;
 
     const savedSales = localStorage.getItem('milk_app_sales');
@@ -443,7 +607,8 @@ if (saveSaleBtn) {
         salesArray[saleIndex].lbenQty = lQty;
         salesArray[saleIndex].totalAmount = totalAmount;
         salesArray[saleIndex].paidAmount = paidAmount;
-        salesArray[saleIndex].tomorrowQty = tomorrowQty;
+        salesArray[saleIndex].tomorrowMilk = parseInt(tomorrowMilkInput.value) || 0;
+        salesArray[saleIndex].tomorrowLben = parseInt(tomorrowLbenInput.value) || 0;
         salesArray[saleIndex].remainingFunds = remFunds;
       }
     } else {
@@ -456,10 +621,32 @@ if (saveSaleBtn) {
         lbenQty: lQty,
         totalAmount: totalAmount,
         paidAmount: paidAmount,
-        tomorrowQty: tomorrowQty,
+        tomorrowMilk: tomorrowMilk, 
+        tomorrowLben: tomorrowLben,
         remainingFunds: remFunds
       };
       salesArray.push(newSale);
+    }
+
+    // Clear past empty crates if the checkmark was clicked
+    if (clearPastCratesFlag && lastSaleIdForCrates) {
+      const saleToUpdate = salesArray.find(s => s.id === lastSaleIdForCrates);
+      if (saleToUpdate) {
+        saleToUpdate.remainingFunds = 0;
+      }
+    }
+
+    // Clear past money debt if the checkmark was clicked
+    if (clearPastDebtFlag) {
+      salesArray.forEach(s => {
+        if (s.clientId === currentSelectedClientId) {
+          const sTotal = parseFloat(s.totalAmount) || 0;
+          const sPaid = parseFloat(s.paidAmount) || 0;
+          if (sTotal > sPaid) {
+            s.paidAmount = sTotal; // Settle the historical debt
+          }
+        }
+      });
     }
 
     localStorage.setItem('milk_app_sales', JSON.stringify(salesArray));
