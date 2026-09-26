@@ -1,0 +1,116 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
+  <title>Milk Manager</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+  <main id="app">
+    <section id="clients-screen" class="screen active">
+      <h1>Daily Deliveries</h1>
+      <div id="daily-clients-grid" class="client-grid"></div>
+    </section>
+
+    <section id="manage-screen" class="screen">
+      <h1>Manage</h1>
+      <h2>Products & Prices</h2>
+      <div class="card">
+        <div class="form-group">
+          <label for="milk-price">Milk Price (DA / fund):</label>
+          <input type="number" id="milk-price" placeholder="e.g. 50">
+        </div>
+        <div class="form-group">
+          <label for="lben-price">Lben Price (DA / fund):</label>
+          <input type="number" id="lben-price" placeholder="e.g. 60">
+        </div>
+        <button id="save-prices-btn" class="primary-btn">Save Prices</button>
+        <p id="price-status" class="status-msg"></p>
+      </div>
+
+      <hr class="divider">
+      <h2>Manage Clients</h2>
+      <div class="card">
+        <div class="form-group row-form">
+          <input type="text" id="new-client-name" placeholder="Client Name (e.g. Ahmed)">
+          <button id="add-client-btn" class="primary-btn add-btn">Add</button>
+        </div>
+        <ul id="manage-client-list" class="client-list"></ul>
+      </div>
+
+    </section>
+
+    <section id="history-screen" class="screen">
+      <h1>History</h1>
+      <div id="history-container"></div>
+    </section>
+  </main>
+
+  <nav id="tab-bar">
+    <button class="tab-button active" data-target="clients-screen">Clients</button>
+    <button class="tab-button" data-target="manage-screen">Manage</button>
+    <button class="tab-button" data-target="history-screen">History</button>
+  </nav>
+  
+<!-- SALE MODAL (Hidden by default) -->
+  <div id="sale-modal" class="modal-overlay">
+    <div class="modal-content card">
+      <h2 id="modal-client-name">Client Name</h2>
+      
+        <div class="form-group row-form">
+        <label>Milk (Funds):</label>
+        <div class="qty-control">
+          <button type="button" id="milk-minus" class="qty-btn">-</button>
+          <input type="number" id="sale-milk-qty" placeholder="0" min="0">
+          <button type="button" id="milk-plus" class="qty-btn">+</button>
+        </div>
+      </div>
+      <div class="form-group row-form">
+        <label>Lben (Funds):</label>
+        <div class="qty-control">
+          <button type="button" id="lben-minus" class="qty-btn">-</button>
+          <input type="number" id="sale-lben-qty" placeholder="0" min="0">
+          <button type="button" id="lben-plus" class="qty-btn">+</button>
+        </div>
+      </div>
+
+<div class="modal-totals">
+        <span>Total: </span>
+        <span id="sale-total-price" class="total-price">0 DA</span>
+      </div>
+
+      <!-- NEW: Paid Amount with "Full" Button & Remaining Money -->
+      <div class="form-group row-form">
+        <label>Paid Amount:</label>
+        <div style="display: flex; gap: 8px; justify-content: flex-end;">
+          <input type="number" id="sale-paid-amount" placeholder="0" style="width: 80px;">
+          <button id="full-pay-btn" class="secondary-btn" style="flex: 0; padding: 0 12px; font-size: 14px;">Full</button>
+        </div>
+      </div>
+      <div class="modal-totals" style="background: #fff3e0; margin-top: -6px; padding: 8px 12px;">
+        <span style="font-size: 14px; color: #555;">Remaining Money: </span>
+        <span id="sale-remaining-money" style="color: #e65100; font-size: 16px;">0 DA</span>
+      </div>
+
+
+<!-- Direct Remaining Funds Input -->
+      <div class="form-group row-form">
+        <label>Remaining Funds:</label>
+        <input type="number" id="sale-remaining-funds" placeholder="0">
+      </div>
+
+      <div class="form-group row-form">
+        <label>Tomorrow's Qty:</label>
+        <input type="number" id="sale-tomorrow-qty" placeholder="0">
+      </div>
+      <div class="modal-actions">
+        <button id="cancel-sale-btn" class="secondary-btn">Cancel</button>
+        <button id="save-sale-btn" class="primary-btn">Save Sale</button>
+      </div>
+    </div>
+  </div>
+  <script src="app.js"></script>
+</body>
+</html>

@@ -1,0 +1,327 @@
+* {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+html, body {
+  height: 100%;
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+}
+
+body {
+  display: flex;
+  flex-direction: column;
+}
+
+#app {
+  flex: 1;
+  overflow-y: auto;
+  padding: 16px;
+}
+
+.screen {
+  display: none;
+}
+
+.screen.active {
+  display: block;
+}
+
+#tab-bar {
+  display: flex;
+  border-top: 1px solid #ccc;
+  padding-bottom: env(safe-area-inset-bottom, 0px);
+}
+
+.tab-button {
+  flex: 1;
+  padding: 14px 0;
+  border: none;
+  background: none;
+  font-size: 14px;
+}
+
+.tab-button.active {
+  font-weight: bold;
+  color: #2196F3;
+}
+
+h2 {
+  margin-bottom: 12px;
+  font-size: 18px;
+}
+
+.card {
+  background: #f9f9f9;
+  border: 1px solid #ddd;
+  border-radius: 8px;
+  padding: 16px;
+  margin-bottom: 16px;
+}
+
+.form-group {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  margin-bottom: 12px;
+}
+
+.form-group label {
+  font-size: 14px;
+  font-weight: 600;
+  color: #333;
+}
+
+.form-group input {
+  padding: 10px;
+  border: 1px solid #ccc;
+  border-radius: 6px;
+  font-size: 16px;
+}
+
+.primary-btn {
+  width: 100%;
+  padding: 12px;
+  background: #2196F3;
+  color: white;
+  border: none;
+  border-radius: 6px;
+  font-size: 16px;
+  font-weight: bold;
+  cursor: pointer;
+}
+
+.primary-btn:active {
+  background: #1976D2;
+}
+
+.status-msg {
+  margin-top: 8px;
+  font-size: 14px;
+  color: #2e7d32;
+  text-align: center;
+}
+
+
+.divider {
+  border: none;
+  border-top: 1px solid #ccc;
+  margin: 20px 0;
+}
+
+.row-form {
+  flex-direction: row;
+  align-items: stretch;
+}
+
+.row-form input {
+  flex: 1;
+  margin-bottom: 0;
+}
+
+.add-btn {
+  width: auto;
+  padding: 10px 20px;
+}
+
+.client-list {
+  list-style: none;
+  margin-top: 16px;
+}
+
+.client-list li {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 12px 0;
+  border-bottom: 1px solid #eee;
+}
+
+.client-list li:last-child {
+  border-bottom: none;
+}
+
+.client-name {
+  font-weight: 600;
+  font-size: 16px;
+}
+
+.delete-btn {
+  background: #ffebee;
+  color: #c62828;
+  border: none;
+  padding: 6px 12px;
+  border-radius: 4px;
+  font-weight: bold;
+  cursor: pointer;
+}
+
+.delete-btn:active {
+  background: #ffcdd2;
+}
+
+
+/* Client Grid (Main Screen) */
+.client-grid {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  margin-top: 16px;
+}
+
+.client-card {
+  background: white;
+  border: 1px solid #ccc;
+  border-radius: 8px;
+  padding: 16px;
+  box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+  font-size: 18px;
+  font-weight: bold;
+  cursor: pointer;
+  display: flex;
+  justify-content: space-between;
+}
+
+.client-card:active {
+  background: #f0f0f0;
+}
+
+/* Modal Popup */
+.modal-overlay {
+  display: none; /* Hidden by default */
+  position: fixed;
+  top: 0; left: 0; right: 0; bottom: 0;
+  background: rgba(0,0,0,0.5);
+  z-index: 1000;
+  justify-content: center;
+  align-items: center;
+  padding: 16px;
+}
+
+.modal-overlay.active {
+  display: flex;
+}
+
+.modal-content {
+  width: 100%;
+  max-width: 400px;
+  margin-bottom: 0;
+}
+
+.modal-content .row-form {
+  justify-content: space-between;
+  align-items: center;
+}
+
+.modal-content .row-form input {
+  width: 80px;
+  text-align: center;
+}
+
+.modal-totals {
+  background: #e3f2fd;
+  padding: 12px;
+  border-radius: 6px;
+  margin: 12px 0;
+  text-align: right;
+  font-size: 16px;
+  font-weight: bold;
+}
+
+.total-price {
+  color: #1565c0;
+  font-size: 20px;
+}
+
+.modal-actions {
+  display: flex;
+  gap: 12px;
+  margin-top: 20px;
+}
+
+.secondary-btn {
+  flex: 1;
+  padding: 12px;
+  background: #e0e0e0;
+  color: #333;
+  border: none;
+  border-radius: 6px;
+  font-size: 16px;
+  font-weight: bold;
+  cursor: pointer;
+}
+
+
+
+.client-card-info {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+/* Base summary text */
+.client-sale-summary {
+  font-size: 13px;
+  font-weight: normal;
+}
+
+/* Paid Client Card Styling (Green) */
+.client-card.has-sale.paid {
+  background: #f1f8e9;
+  border-color: #a5d6a7;
+}
+.client-sale-summary.paid-text {
+  color: #2e7d32;
+}
+
+/* Unpaid Client Card Styling (Red) */
+.client-card.has-sale.unpaid {
+  background: #ffebee;
+  border-color: #ef9a9a;
+}
+.client-sale-summary.unpaid-text {
+  color: #c62828;
+}
+
+/* Quantity +/- Buttons & Small Inputs */
+.qty-control {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.qty-control input {
+  width: 50px !important;
+  text-align: center;
+  padding: 8px 4px !important;
+}
+
+.qty-btn {
+  width: 32px;
+  height: 32px;
+  background: #e0e0e0;
+  border: none;
+  border-radius: 4px;
+  font-size: 20px;
+  font-weight: bold;
+  color: #333;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.qty-btn:active {
+  background: #bdbdbd;
+}
+
+/* Hide the default browser arrows in the number field */
+.qty-control input[type=number]::-webkit-inner-spin-button,
+.qty-control input[type=number]::-webkit-outer-spin-button {
+  -webkit-appearance: none;
+  margin: 0;
+}
+.qty-control input[type=number] {
+  -moz-appearance: textfield;
+}
