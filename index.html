@@ -4,6 +4,9 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
   <title>Milk Manager</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="style.css">
 </head>
 <body>
@@ -11,12 +14,52 @@
   <main id="app">
     <section id="clients-screen" class="screen active">
       <h1>Daily Deliveries</h1>
+
+<!-- TODAY'S STOCK CARD -->
+      <div class="card" id="daily-stock-card">
+        
+        <!-- Inline Header, Inputs, and Button -->
+        <div style="display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 8px; margin-bottom: 20px;">
+          <h2 style="margin: 0; font-size: 18px;">Today's Stock</h2>
+          
+          <div style="display: flex; align-items: center; gap: 6px;">
+            <label style="font-size: 13px; font-weight: bold; color: #333;">Milk:</label>
+            <input type="number" id="stock-milk-owned" placeholder="0" min="0" style="width: 65px; padding: 6px; border: 1px solid #ccc; border-radius: 6px; font-size: 14px; text-align: center;">
+            
+            <label style="font-size: 13px; font-weight: bold; color: #333; margin-left: 4px;">Lben:</label>
+            <input type="number" id="stock-lben-owned" placeholder="0" min="0" style="width: 65px; padding: 6px; border: 1px solid #ccc; border-radius: 6px; font-size: 14px; text-align: center;">
+            
+            <button id="save-stock-btn" class="primary-btn" style="width: auto; padding: 6px 12px; margin-left: 4px;">Validate</button>
+            <button id="edit-stock-btn" class="secondary-btn" style="display: none; width: auto; padding: 6px 12px; margin-left: 4px;">Edit</button>
+          </div>
+        </div>
+
+        <!-- Display Squares Section -->
+        <div style="display: flex; gap: 12px;">
+          <!-- Milk Square -->
+          <div style="flex: 1; background: #e3f2fd; border: 1px solid #bbdefb; border-radius: 8px; padding: 16px; text-align: center;">
+            <h4 style="margin: 0 0 8px 0; font-size: 14px; color: #1565c0;">Milk Sold</h4>
+            <div id="stock-milk-sold" style="font-size: 36px; font-weight: bold; color: #0d47a1; margin-bottom: 8px;">0</div>
+            <div style="font-size: 13px; font-weight: bold; color: #555;">Remaining: <span id="stock-milk-remaining">0</span></div>
+          </div>
+          
+          <!-- Lben Square -->
+          <div style="flex: 1; background: #e8f5e9; border: 1px solid #c8e6c9; border-radius: 8px; padding: 16px; text-align: center;">
+            <h4 style="margin: 0 0 8px 0; font-size: 14px; color: #2e7d32;">Lben Sold</h4>
+            <div id="stock-lben-sold" style="font-size: 36px; font-weight: bold; color: #1b5e20; margin-bottom: 8px;">0</div>
+            <div style="font-size: 13px; font-weight: bold; color: #555;">Remaining: <span id="stock-lben-remaining">0</span></div>
+          </div>
+        </div>
+      </div>
+
       <div id="daily-clients-grid" class="client-grid"></div>
     </section>
 
+
+
     <section id="manage-screen" class="screen">
       <h1>Manage</h1>
-      <h2>Products & Prices</h2>
+<h2>Products & Prices</h2>
       <div class="card">
         <div class="form-group">
           <label for="milk-price">Milk Price (DA / fund):</label>
@@ -26,7 +69,10 @@
           <label for="lben-price">Lben Price (DA / fund):</label>
           <input type="number" id="lben-price" placeholder="e.g. 60">
         </div>
-        <button id="save-prices-btn" class="primary-btn">Save Prices</button>
+        <div style="display: flex; gap: 8px;">
+          <button id="save-prices-btn" class="primary-btn" style="flex: 1;">Save Prices</button>
+          <button id="edit-prices-btn" class="secondary-btn" style="display: none; flex: 1;">Edit Prices</button>
+        </div>
         <p id="price-status" class="status-msg"></p>
       </div>
 
@@ -44,6 +90,7 @@
 
     <section id="history-screen" class="screen">
       <h1>History</h1>
+      <div id="debt-summary-container"></div>
       <div id="history-container"></div>
     </section>
   </main>
@@ -96,15 +143,26 @@
 
 
 <!-- Direct Remaining Funds Input -->
-      <div class="form-group row-form">
-        <label>Remaining Funds:</label>
-        <input type="number" id="sale-remaining-funds" placeholder="0">
-      </div>
+<!-- Remaining Funds with +/- -->
+<div class="form-group row-form">
+  <label>Remaining Funds:</label>
+  <div class="qty-control">
+    <button type="button" id="funds-minus" class="qty-btn">-</button>
+    <input type="number" id="sale-remaining-funds" placeholder="0" min="0">
+    <button type="button" id="funds-plus" class="qty-btn">+</button>
+  </div>
+</div>
 
-      <div class="form-group row-form">
-        <label>Tomorrow's Qty:</label>
-        <input type="number" id="sale-tomorrow-qty" placeholder="0">
-      </div>
+<!-- Tomorrow's Qty with +/- -->
+<div class="form-group row-form">
+  <label>Tomorrow's Qty:</label>
+  <div class="qty-control">
+    <button type="button" id="tomorrow-minus" class="qty-btn">-</button>
+    <input type="number" id="sale-tomorrow-qty" placeholder="0" min="0">
+    <button type="button" id="tomorrow-plus" class="qty-btn">+</button>
+  </div>
+</div>
+
       <div class="modal-actions">
         <button id="cancel-sale-btn" class="secondary-btn">Cancel</button>
         <button id="save-sale-btn" class="primary-btn">Save Sale</button>

@@ -1,12 +1,42 @@
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap');
+
+/* --- 1. VARIABLES & TOKENS --- */
+:root {
+  --primary: #0066ff;       /* Modern vibrant blue */
+  --primary-active: #0052cc;
+  --bg-main: #f4f7f9;       /* Light app background */
+  --bg-card: #ffffff;
+  --text-dark: #0f172a;
+  --text-muted: #64748b;
+  --border-color: #e2e8f0;
+  
+  --success-bg: #ecfdf5;
+  --success-border: #a7f3d0;
+  --success-text: #059669;
+  
+  --danger-bg: #fef2f2;
+  --danger-border: #fecaca;
+  --danger-text: #dc2626;
+
+  --radius-sm: 8px;
+  --radius-md: 16px;
+  --shadow-sm: 0 2px 8px rgba(0, 0, 0, 0.04);
+  --shadow-md: 0 8px 24px rgba(15, 23, 42, 0.08);
+}
+
+/* --- 2. GLOBAL RESET & BASE --- */
 * {
   box-sizing: border-box;
   margin: 0;
   padding: 0;
+  -webkit-tap-highlight-color: transparent;
 }
 
 html, body {
   height: 100%;
-  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+  font-family: 'Inter', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+  background-color: var(--bg-main);
+  color: var(--text-dark);
 }
 
 body {
@@ -20,149 +50,160 @@ body {
   padding: 16px;
 }
 
-.screen {
-  display: none;
-}
+h1 { font-size: 24px; font-weight: 700; margin-bottom: 20px; }
+h2 { font-size: 18px; font-weight: 600; margin-bottom: 12px; }
+.divider { border: none; border-top: 1px solid var(--border-color); margin: 24px 0; }
 
-.screen.active {
-  display: block;
+/* --- 3. TAB NAVIGATION --- */
+.screen { display: none; }
+.screen.active { display: block; animation: fadeIn 0.2s ease-out; }
+
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(4px); }
+  to { opacity: 1; transform: translateY(0); }
 }
 
 #tab-bar {
   display: flex;
-  border-top: 1px solid #ccc;
+  background: var(--bg-card);
+  border-top: 1px solid var(--border-color);
   padding-bottom: env(safe-area-inset-bottom, 0px);
+  box-shadow: 0 -4px 12px rgba(0,0,0,0.02);
 }
 
 .tab-button {
   flex: 1;
-  padding: 14px 0;
+  padding: 16px 0;
   border: none;
   background: none;
   font-size: 14px;
+  font-weight: 500;
+  color: var(--text-muted);
+  cursor: pointer;
+  transition: color 0.2s;
 }
 
 .tab-button.active {
-  font-weight: bold;
-  color: #2196F3;
+  font-weight: 700;
+  color: var(--primary);
 }
 
-h2 {
-  margin-bottom: 12px;
-  font-size: 18px;
-}
-
+/* --- 4. CARDS & FORMS --- */
 .card {
-  background: #f9f9f9;
-  border: 1px solid #ddd;
-  border-radius: 8px;
-  padding: 16px;
+  background: var(--bg-card);
+  border: 1px solid var(--border-color);
+  border-radius: var(--radius-md);
+  padding: 20px;
   margin-bottom: 16px;
+  box-shadow: var(--shadow-sm);
 }
 
 .form-group {
   display: flex;
   flex-direction: column;
-  gap: 6px;
-  margin-bottom: 12px;
+  gap: 8px;
+  margin-bottom: 16px;
 }
 
 .form-group label {
-  font-size: 14px;
+  font-size: 13px;
   font-weight: 600;
-  color: #333;
+  color: var(--text-muted);
 }
 
-.form-group input {
-  padding: 10px;
-  border: 1px solid #ccc;
-  border-radius: 6px;
-  font-size: 16px;
-}
-
-.primary-btn {
-  width: 100%;
+.form-group input, 
+.row-form input {
   padding: 12px;
-  background: #2196F3;
-  color: white;
-  border: none;
-  border-radius: 6px;
+  border: 1.5px solid var(--border-color);
+  border-radius: var(--radius-sm);
   font-size: 16px;
-  font-weight: bold;
-  cursor: pointer;
+  font-family: inherit;
+  transition: border-color 0.2s, box-shadow 0.2s;
 }
 
-.primary-btn:active {
-  background: #1976D2;
+.form-group input:focus, 
+.row-form input:focus {
+  outline: none;
+  border-color: var(--primary);
+  box-shadow: 0 0 0 3px rgba(0, 102, 255, 0.15);
 }
 
-.status-msg {
-  margin-top: 8px;
-  font-size: 14px;
-  color: #2e7d32;
-  text-align: center;
-}
-
-
-.divider {
-  border: none;
-  border-top: 1px solid #ccc;
-  margin: 20px 0;
+.form-group input:disabled {
+  background: #f8fafc;
+  color: #94a3b8;
 }
 
 .row-form {
+  display: flex;
   flex-direction: row;
-  align-items: stretch;
+  align-items: center;
+  gap: 12px;
+}
+.row-form input { flex: 1; margin-bottom: 0; }
+
+/* --- 5. BUTTONS --- */
+button {
+  font-family: inherit;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: transform 0.1s, background 0.2s;
 }
 
-.row-form input {
+button:active { transform: scale(0.96); }
+
+.primary-btn {
+  width: 100%;
+  padding: 14px;
+  background: var(--primary);
+  color: white;
+  border: none;
+  border-radius: var(--radius-sm);
+  font-size: 15px;
+  font-weight: 600;
+  box-shadow: 0 4px 10px rgba(0, 102, 255, 0.2);
+}
+.primary-btn:active { background: var(--primary-active); box-shadow: none; }
+
+.secondary-btn {
   flex: 1;
-  margin-bottom: 0;
+  padding: 14px;
+  background: #f1f5f9;
+  color: var(--text-dark);
+  border: none;
+  border-radius: var(--radius-sm);
+  font-size: 15px;
+  font-weight: 600;
 }
+.secondary-btn:active { background: #e2e8f0; }
 
-.add-btn {
-  width: auto;
-  padding: 10px 20px;
+.add-btn { width: auto; padding: 12px 24px; }
+
+.delete-btn {
+  background: var(--danger-bg);
+  color: var(--danger-text);
+  border: none;
+  padding: 8px 12px;
+  border-radius: 6px;
+  font-weight: 600;
+  font-size: 13px;
 }
+.delete-btn:active { background: var(--danger-border); }
 
-.client-list {
-  list-style: none;
-  margin-top: 16px;
-}
-
+/* --- 6. MANAGE LISTS --- */
+.client-list { list-style: none; margin-top: 16px; }
 .client-list li {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  padding: 12px 0;
-  border-bottom: 1px solid #eee;
+  padding: 14px 0;
+  border-bottom: 1px solid var(--border-color);
 }
+.client-list li:last-child { border-bottom: none; }
+.client-name { font-weight: 600; font-size: 15px; }
 
-.client-list li:last-child {
-  border-bottom: none;
-}
-
-.client-name {
-  font-weight: 600;
-  font-size: 16px;
-}
-
-.delete-btn {
-  background: #ffebee;
-  color: #c62828;
-  border: none;
-  padding: 6px 12px;
-  border-radius: 4px;
-  font-weight: bold;
-  cursor: pointer;
-}
-
-.delete-btn:active {
-  background: #ffcdd2;
-}
-
-
-/* Client Grid (Main Screen) */
+/* --- 7. MAIN CLIENT GRID --- */
 .client-grid {
   display: flex;
   flex-direction: column;
@@ -171,157 +212,116 @@ h2 {
 }
 
 .client-card {
-  background: white;
-  border: 1px solid #ccc;
-  border-radius: 8px;
-  padding: 16px;
-  box-shadow: 0 2px 4px rgba(0,0,0,0.05);
-  font-size: 18px;
-  font-weight: bold;
+  background: var(--bg-card);
+  border: 1px solid var(--border-color);
+  border-radius: var(--radius-md);
+  padding: 16px 20px;
+  box-shadow: var(--shadow-sm);
+  font-size: 16px;
+  font-weight: 700;
   cursor: pointer;
   display: flex;
   justify-content: space-between;
+  align-items: center;
+  transition: transform 0.1s, box-shadow 0.2s;
 }
 
 .client-card:active {
-  background: #f0f0f0;
+  transform: scale(0.98);
+  background: #f8fafc;
 }
 
-/* Modal Popup */
+.client-card-info { display: flex; flex-direction: column; gap: 4px; text-align: right; }
+.client-sale-summary { font-size: 13px; font-weight: 500; }
+
+/* Status Colors */
+.client-card.has-sale.paid { background: var(--success-bg); border-color: var(--success-border); }
+.client-sale-summary.paid-text { color: var(--success-text); }
+
+.client-card.has-sale.unpaid { background: var(--danger-bg); border-color: var(--danger-border); }
+.client-sale-summary.unpaid-text { color: var(--danger-text); }
+
+/* --- 8. MODAL --- */
 .modal-overlay {
-  display: none; /* Hidden by default */
+  display: none;
   position: fixed;
   top: 0; left: 0; right: 0; bottom: 0;
-  background: rgba(0,0,0,0.5);
+  background: rgba(15, 23, 42, 0.6);
+  backdrop-filter: blur(4px);
   z-index: 1000;
   justify-content: center;
   align-items: center;
   padding: 16px;
 }
-
-.modal-overlay.active {
-  display: flex;
-}
+.modal-overlay.active { display: flex; animation: fadeIn 0.15s ease-out; }
 
 .modal-content {
   width: 100%;
   max-width: 400px;
+  background: var(--bg-card);
+  border-radius: var(--radius-md);
+  padding: 24px;
+  box-shadow: var(--shadow-md);
   margin-bottom: 0;
+  max-height: 90vh;
+  overflow-y: auto;
 }
 
-.modal-content .row-form {
-  justify-content: space-between;
-  align-items: center;
-}
-
-.modal-content .row-form input {
-  width: 80px;
-  text-align: center;
-}
+.modal-content h2 { font-size: 20px; margin-bottom: 20px; text-align: center; }
+.modal-content .row-form { justify-content: space-between; align-items: center; }
+.modal-content .row-form input { width: 80px; text-align: center; }
 
 .modal-totals {
-  background: #e3f2fd;
-  padding: 12px;
-  border-radius: 6px;
-  margin: 12px 0;
+  background: #f8fafc;
+  padding: 16px;
+  border-radius: var(--radius-sm);
+  margin: 16px 0;
   text-align: right;
-  font-size: 16px;
-  font-weight: bold;
+  font-size: 15px;
+  font-weight: 600;
+  border: 1px solid var(--border-color);
 }
+.total-price { color: var(--primary); font-size: 22px; font-weight: 700; margin-left: 8px; }
 
-.total-price {
-  color: #1565c0;
-  font-size: 20px;
-}
+.modal-actions { display: flex; gap: 12px; margin-top: 24px; }
 
-.modal-actions {
-  display: flex;
-  gap: 12px;
-  margin-top: 20px;
-}
-
-.secondary-btn {
-  flex: 1;
-  padding: 12px;
-  background: #e0e0e0;
-  color: #333;
-  border: none;
-  border-radius: 6px;
-  font-size: 16px;
-  font-weight: bold;
-  cursor: pointer;
-}
-
-
-
-.client-card-info {
-  display: flex;
-  flex-direction: column;
-  gap: 4px;
-}
-
-/* Base summary text */
-.client-sale-summary {
-  font-size: 13px;
-  font-weight: normal;
-}
-
-/* Paid Client Card Styling (Green) */
-.client-card.has-sale.paid {
-  background: #f1f8e9;
-  border-color: #a5d6a7;
-}
-.client-sale-summary.paid-text {
-  color: #2e7d32;
-}
-
-/* Unpaid Client Card Styling (Red) */
-.client-card.has-sale.unpaid {
-  background: #ffebee;
-  border-color: #ef9a9a;
-}
-.client-sale-summary.unpaid-text {
-  color: #c62828;
-}
-
-/* Quantity +/- Buttons & Small Inputs */
-.qty-control {
-  display: flex;
-  align-items: center;
-  gap: 6px;
-}
-
+/* --- 9. QUANTITY CONTROLS --- */
+.qty-control { display: flex; align-items: center; gap: 8px; }
 .qty-control input {
-  width: 50px !important;
+  width: 56px !important;
   text-align: center;
-  padding: 8px 4px !important;
+  padding: 10px 4px !important;
+  font-weight: 600;
 }
-
 .qty-btn {
-  width: 32px;
-  height: 32px;
-  background: #e0e0e0;
+  width: 36px;
+  height: 36px;
+  background: #f1f5f9;
+  color: var(--text-dark);
   border: none;
-  border-radius: 4px;
+  border-radius: var(--radius-sm);
   font-size: 20px;
-  font-weight: bold;
-  color: #333;
-  cursor: pointer;
-  display: flex;
-  align-items: center;
-  justify-content: center;
+  font-weight: 500;
 }
+.qty-btn:active { background: #e2e8f0; }
 
-.qty-btn:active {
-  background: #bdbdbd;
-}
-
-/* Hide the default browser arrows in the number field */
 .qty-control input[type=number]::-webkit-inner-spin-button,
 .qty-control input[type=number]::-webkit-outer-spin-button {
   -webkit-appearance: none;
   margin: 0;
 }
-.qty-control input[type=number] {
-  -moz-appearance: textfield;
+.qty-control input[type=number] { -moz-appearance: textfield; }
+
+/* Misc */
+.status-msg { margin-top: 8px; font-size: 13px; color: var(--success-text); text-align: center; font-weight: 500; }
+
+/* Hide scrollbar for Chrome, Safari and Opera */
+*::-webkit-scrollbar {
+  display: none;
+}
+
+/* Hide scrollbar for IE, Edge and Firefox */
+* {
+  -ms-overflow-style: none;  /* IE and Edge */
+  scrollbar-width: none;  /* Firefox */
 }
