@@ -20,8 +20,8 @@
         <div class="stock-header">
           <h2>Stock du jour</h2>
           <div class="stock-inputs">
-            <label class="product-label product-labeLait" for="stoLait-owned">Lait</label>
-            <input type="number" id="stoLait-owned" class="stock-input" placeholder="0" min="0">
+            <label class="product-label product-label--milk" for="stock-milk-owned">Lait</label>
+            <input type="number" id="stock-milk-owned" class="stock-input" placeholder="0" min="0">
 
             <label class="product-label product-label--lben" for="stock-lben-owned">Lben</label>
             <input type="number" id="stock-lben-owned" class="stock-input" placeholder="0" min="0">
@@ -32,10 +32,10 @@
         </div>
 
         <div class="stat-strip">
-          <div class="stat-block stat-blocLait">
+          <div class="stat-block stat-block--milk">
             <span class="stat-label">Lait vendu</span>
-            <span class="stat-figure" id="stoLait-sold">0</span>
-            <span class="stat-sub">Restant <strong id="stoLait-remaining">0</strong></span>
+            <span class="stat-figure" id="stock-milk-sold">0</span>
+            <span class="stat-sub">Restant <strong id="stock-milk-remaining">0</strong></span>
           </div>
           <div class="stat-block stat-block--lben">
             <span class="stat-label">Lben vendu</span>
@@ -56,8 +56,8 @@
         <!-- DISPLAY MODE (Locked) -->
         <div id="prices-display-view" class="prices-display-row" style="display: none;">
           <div class="price-display-block">
-            <span class="product-label product-labeLait">Lait</span>
-            <span class="price-figuLait-figure" iLait-price-display">0</span>
+            <span class="product-label product-label--milk">Lait</span>
+            <span class="price-figure milk-figure" id="milk-price-display">0</span>
           </div>
           <div class="price-display-block">
             <span class="product-label product-label--lben">Lben</span>
@@ -69,8 +69,8 @@
         <!-- EDIT MODE (Unlocked) -->
         <div id="prices-edit-view">
           <div class="form-group">
-            <label class="product-label product-labeLait" foLait-price">Prix du lait <span>DA / fond</span></label>
-            <input type="number" iLait-price" placeholder="ex. 345">
+            <label class="product-label product-label--milk" for="milk-price">Prix du lait <span>DA / fond</span></label>
+            <input type="number" id="milk-price" placeholder="ex. 345">
           </div>
           <div class="form-group">
             <label class="product-label product-label--lben" for="lben-price">Prix du Lben <span>DA / fond</span></label>
@@ -140,11 +140,11 @@
       <h2 id="modal-client-name">Nom du client</h2>
       <div id="modal-reminders" class="modal-reminders"></div>
       <div class="form-group row-form">
-        <label class="modal-product-label modal-product-labeLait">Lait <span>Fonds</span></label>
+        <label class="modal-product-label modal-product-label--milk">Lait <span>Fonds</span></label>
         <div class="qty-control">
-          <button type="button" iLait-minus" class="qty-btn">-</button>
-          <input type="number" id="saLait-qty" placeholder="0" min="0">
-          <button type="button" iLait-plus" class="qty-btn">+</button>
+          <button type="button" id="milk-minus" class="qty-btn">-</button>
+          <input type="number" id="sale-milk-qty" placeholder="0" min="0">
+          <button type="button" id="milk-plus" class="qty-btn">+</button>
         </div>
       </div>
       <div class="form-group row-form">
@@ -179,11 +179,11 @@
         </div>
       </div>
       <div class="form-group row-form">
-        <label class="modal-product-label modal-product-labeLait">Lait demain</label>
+        <label class="modal-product-label modal-product-label--milk">Lait demain</label>
         <div class="qty-control">
-          <button type="button" id="tomorrLait-minus" class="qty-btn">-</button>
-          <input type="number" id="sale-tomorrLait" placeholder="0" min="0">
-          <button type="button" id="tomorrLait-plus" class="qty-btn">+</button>
+          <button type="button" id="tomorrow-milk-minus" class="qty-btn">-</button>
+          <input type="number" id="sale-tomorrow-milk" placeholder="0" min="0">
+          <button type="button" id="tomorrow-milk-plus" class="qty-btn">+</button>
         </div>
       </div>
       <div class="form-group row-form">
