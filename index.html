@@ -1,9 +1,9 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="fr">
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, viewport-fit=cover">
-  <title>Milk Manager</title>
+  <title>Lait Manager</title>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Manrope:wght@500;600;700;800&display=swap" rel="stylesheet">
@@ -13,34 +13,34 @@
 
   <main id="app">
     <section id="clients-screen" class="screen active">
-      <h1>Daily Deliveries <span id="today-date-label" class="today-date"></span></h1>
+      <h1>Livraisons du jour <span id="today-date-label" class="today-date"></span></h1>
 
       <!-- TODAY'S STOCK CARD -->
       <div class="card" id="daily-stock-card">
         <div class="stock-header">
-          <h2>Today's Stock</h2>
+          <h2>Stock du jour</h2>
           <div class="stock-inputs">
-            <label class="product-label product-label--milk" for="stock-milk-owned">Milk</label>
-            <input type="number" id="stock-milk-owned" class="stock-input" placeholder="0" min="0">
+            <label class="product-label product-labeLait" for="stoLait-owned">Lait</label>
+            <input type="number" id="stoLait-owned" class="stock-input" placeholder="0" min="0">
 
             <label class="product-label product-label--lben" for="stock-lben-owned">Lben</label>
             <input type="number" id="stock-lben-owned" class="stock-input" placeholder="0" min="0">
 
-            <button id="save-stock-btn" class="primary-btn btn-compact">Validate</button>
-            <button id="edit-stock-btn" class="secondary-btn btn-compact" style="display: none;">Edit</button>
+            <button id="save-stock-btn" class="primary-btn btn-compact">Valider</button>
+            <button id="edit-stock-btn" class="secondary-btn btn-compact" style="display: none;">Modifier</button>
           </div>
         </div>
 
         <div class="stat-strip">
-          <div class="stat-block stat-block--milk">
-            <span class="stat-label">Milk sold</span>
-            <span class="stat-figure" id="stock-milk-sold">0</span>
-            <span class="stat-sub">Remaining <strong id="stock-milk-remaining">0</strong></span>
+          <div class="stat-block stat-blocLait">
+            <span class="stat-label">Lait vendu</span>
+            <span class="stat-figure" id="stoLait-sold">0</span>
+            <span class="stat-sub">Restant <strong id="stoLait-remaining">0</strong></span>
           </div>
           <div class="stat-block stat-block--lben">
-            <span class="stat-label">Lben sold</span>
+            <span class="stat-label">Lben vendu</span>
             <span class="stat-figure" id="stock-lben-sold">0</span>
-            <span class="stat-sub">Remaining <strong id="stock-lben-remaining">0</strong></span>
+            <span class="stat-sub">Restant <strong id="stock-lben-remaining">0</strong></span>
           </div>
         </div>
       </div>
@@ -50,70 +50,70 @@
     </section>
 
     <section id="manage-screen" class="screen">
-      <h1>Manage</h1>
-      <h2>Products &amp; Prices</h2>
+      <h1>Gérer</h1>
+      <h2>Produits &amp; Prix</h2>
       <div class="card">
         <!-- DISPLAY MODE (Locked) -->
         <div id="prices-display-view" class="prices-display-row" style="display: none;">
           <div class="price-display-block">
-            <span class="product-label product-label--milk">Milk</span>
-            <span class="price-figure milk-figure" id="milk-price-display">0</span>
+            <span class="product-label product-labeLait">Lait</span>
+            <span class="price-figuLait-figure" iLait-price-display">0</span>
           </div>
           <div class="price-display-block">
             <span class="product-label product-label--lben">Lben</span>
             <span class="price-figure lben-figure" id="lben-price-display">0</span>
           </div>
-          <button id="edit-prices-btn" class="secondary-btn btn-compact edit-icon-btn">Edit</button>
+          <button id="edit-prices-btn" class="secondary-btn btn-compact edit-icon-btn">Modifier</button>
         </div>
 
         <!-- EDIT MODE (Unlocked) -->
         <div id="prices-edit-view">
           <div class="form-group">
-            <label class="product-label product-label--milk" for="milk-price">Milk price <span>DA / fond</span></label>
-            <input type="number" id="milk-price" placeholder="e.g. 345">
+            <label class="product-label product-labeLait" foLait-price">Prix du lait <span>DA / fond</span></label>
+            <input type="number" iLait-price" placeholder="ex. 345">
           </div>
           <div class="form-group">
-            <label class="product-label product-label--lben" for="lben-price">Lben price <span>DA / fond</span></label>
-            <input type="number" id="lben-price" placeholder="e.g. 1200">
+            <label class="product-label product-label--lben" for="lben-price">Prix du Lben <span>DA / fond</span></label>
+            <input type="number" id="lben-price" placeholder="ex. 1200">
           </div>
-          <button id="save-prices-btn" class="primary-btn">Save Prices</button>
+          <button id="save-prices-btn" class="primary-btn">Enregistrer les prix</button>
         </div>
         <p id="price-status" class="status-msg"></p>
       </div>
 
       <hr class="divider">
-      <h2>Manage Clients</h2>
+      <h2>Gérer les clients</h2>
       <div class="card">
         <div class="form-group row-form" style="gap: 8px;">
-          <input type="text" id="new-client-name" placeholder="Name" style="flex: 2;">
+          <input type="text" id="new-client-name" placeholder="Nom" style="flex: 2;">
           
           <!-- This select dropdown was missing in index_3.html -->
           <select id="client-group-select" class="custom-select" >
-            <option value="">None</option>
+            <option value="">Aucun</option>
           </select>
 
-          <button id="add-client-btn" class="primary-btn add-btn" style="flex: 1;">Add</button>
+          <button id="add-client-btn" class="primary-btn add-btn" style="flex: 1;">Ajouter</button>
         </div>
         <ul id="manage-client-list" class="client-list"></ul>
       </div>
 
       <div class="card">
-        <h2>Manage Groups / Routes</h2>
+        <h2>Gérer les groupes / tournées</h2>
         <form id="addGroupForm" class="row-form">
-          <input type="text" id="groupNameInput" placeholder="Group Name (e.g. Bologhine)" required>
-          <button type="submit" class="primary-btn btn-compact">Add</button>
+          <input type="text" id="groupNameInput" placeholder="Nom du groupe (ex. Bologhine)" required>
+          <button type="submit" class="primary-btn btn-compact">Ajouter</button>
         </form>
         <div id="manageGroupsList"></div>
       </div>
 
 
       <hr class="divider">
-      <h2>Backup &amp; Restore</h2>
+      <h2>Sauvegarde &amp; Restauration</h2>
       <div class="card">
-        <p class="hint-text">Your data lives only in this browser. Export a backup now and then so a cleared cache or a new phone never costs you a client list, your prices, or your sales history.</p>
+        <p class="hint-text">Vos données ne sont enregistrées que dans ce navigateur. Exportez une sauvegarde de temps en temps pour qu'un cache effacé ou un nouveau téléphone ne vous fasse jamais perdre votre liste de clients, vos prix ou votre historique de ventes.</p>
         <div class="backup-actions">
-          <button id="export-data-btn" class="secondary-btn">Export backup</button>
-          <label for="import-data-input" class="secondary-btn file-btn">Import backup</label>
+          <button id="export-data-btn" class="secondary-btn">Exporter la sauvegarde</button>
+          <label for="import-data-input" class="secondary-btn file-btn">Importer une sauvegarde</label>
           <input type="file" id="import-data-input" accept="application/json" hidden>
         </div>
         <p id="backup-status" class="status-msg"></p>
@@ -122,7 +122,7 @@
 
     <!-- History Screen & Modal (identical to previous setup) -->
     <section id="history-screen" class="screen">
-      <h1>History</h1>
+      <h1>Historique</h1>
       <div id="debt-summary-container"></div>
       <div id="history-container"></div>
     </section>
@@ -130,25 +130,25 @@
 
   <nav id="tab-bar">
     <button class="tab-button active" data-target="clients-screen">Clients</button>
-    <button class="tab-button" data-target="manage-screen">Manage</button>
-    <button class="tab-button" data-target="history-screen">History</button>
+    <button class="tab-button" data-target="manage-screen">Gérer</button>
+    <button class="tab-button" data-target="history-screen">Historique</button>
   </nav>
 
   <!-- SALE MODAL -->
   <div id="sale-modal" class="modal-overlay">
     <div class="modal-content card">
-      <h2 id="modal-client-name">Client Name</h2>
+      <h2 id="modal-client-name">Nom du client</h2>
       <div id="modal-reminders" class="modal-reminders"></div>
       <div class="form-group row-form">
-        <label class="modal-product-label modal-product-label--milk">Milk <span>Funds</span></label>
+        <label class="modal-product-label modal-product-labeLait">Lait <span>Fonds</span></label>
         <div class="qty-control">
-          <button type="button" id="milk-minus" class="qty-btn">-</button>
-          <input type="number" id="sale-milk-qty" placeholder="0" min="0">
-          <button type="button" id="milk-plus" class="qty-btn">+</button>
+          <button type="button" iLait-minus" class="qty-btn">-</button>
+          <input type="number" id="saLait-qty" placeholder="0" min="0">
+          <button type="button" iLait-plus" class="qty-btn">+</button>
         </div>
       </div>
       <div class="form-group row-form">
-        <label class="modal-product-label modal-product-label--lben">Lben <span>Funds</span></label>
+        <label class="modal-product-label modal-product-label--lben">Lben <span>Fonds</span></label>
         <div class="qty-control">
           <button type="button" id="lben-minus" class="qty-btn">-</button>
           <input type="number" id="sale-lben-qty" placeholder="0" min="0">
@@ -156,22 +156,22 @@
         </div>
       </div>
       <div class="modal-totals">
-        <span>Total: </span>
+        <span>Total : </span>
         <span id="sale-total-price" class="total-price">0 DA</span>
       </div>
       <div class="form-group row-form">
-        <label>Paid Amount:</label>
+        <label>Montant payé :</label>
         <div class="paid-row">
           <input type="number" id="sale-paid-amount" placeholder="0">
-          <button id="full-pay-btn" class="secondary-btn btn-compact">Full</button>
+          <button id="full-pay-btn" class="secondary-btn btn-compact">Tout payer</button>
         </div>
       </div>
       <div class="modal-totals modal-totals--remaining">
-        <span class="remaining-money-label">Remaining Money: </span>
+        <span class="remaining-money-label">Reste à payer : </span>
         <span id="sale-remaining-money" class="remaining-money-figure">0 DA</span>
       </div>
       <div class="form-group row-form">
-        <label>Empty Crates (Fonds):</label>
+        <label>Fonds vides (casiers) :</label>
         <div class="qty-control">
           <button type="button" id="funds-minus" class="qty-btn">-</button>
           <input type="number" id="sale-remaining-funds" placeholder="0" min="0">
@@ -179,15 +179,15 @@
         </div>
       </div>
       <div class="form-group row-form">
-        <label class="modal-product-label modal-product-label--milk">Tomorrow Milk</label>
+        <label class="modal-product-label modal-product-labeLait">Lait demain</label>
         <div class="qty-control">
-          <button type="button" id="tomorrow-milk-minus" class="qty-btn">-</button>
-          <input type="number" id="sale-tomorrow-milk" placeholder="0" min="0">
-          <button type="button" id="tomorrow-milk-plus" class="qty-btn">+</button>
+          <button type="button" id="tomorrLait-minus" class="qty-btn">-</button>
+          <input type="number" id="sale-tomorrLait" placeholder="0" min="0">
+          <button type="button" id="tomorrLait-plus" class="qty-btn">+</button>
         </div>
       </div>
       <div class="form-group row-form">
-        <label class="modal-product-label modal-product-label--lben">Tomorrow Lben</label>
+        <label class="modal-product-label modal-product-label--lben">Lben demain</label>
         <div class="qty-control">
           <button type="button" id="tomorrow-lben-minus" class="qty-btn">-</button>
           <input type="number" id="sale-tomorrow-lben" placeholder="0" min="0">
@@ -195,8 +195,8 @@
         </div>
       </div>
       <div class="modal-actions">
-        <button id="cancel-sale-btn" class="secondary-btn">Cancel</button>
-        <button id="save-sale-btn" class="primary-btn">Save Sale</button>
+        <button id="cancel-sale-btn" class="secondary-btn">Annuler</button>
+        <button id="save-sale-btn" class="primary-btn">Enregistrer la vente</button>
       </div>
     </div>
   </div>
@@ -204,22 +204,22 @@
   <!-- EDIT CLIENT MODAL -->
   <div id="edit-client-modal" class="modal-overlay">
     <div class="modal-content card">
-      <h2>Edit Client</h2>
+      <h2>Modifier le client</h2>
       <div class="form-group">
-        <label for="edit-client-name">Name</label>
-        <input type="text" id="edit-client-name" placeholder="Name">
+        <label for="edit-client-name">Nom</label>
+        <input type="text" id="edit-client-name" placeholder="Nom">
       </div>
       <div class="form-group">
-        <label for="edit-client-group-select">Group / Route</label>
+        <label for="edit-client-group-select">Groupe / Tournée</label>
         <select id="edit-client-group-select" class="custom-select">
-          <option value="">None</option>
+          <option value="">Aucun</option>
         </select>
       </div>
       <p id="edit-client-status" class="status-msg"></p>
       <div class="modal-actions">
-        <button id="edit-client-archive-btn" class="secondary-btn">Archive</button>
-        <button id="cancel-edit-client-btn" class="secondary-btn">Cancel</button>
-        <button id="save-edit-client-btn" class="primary-btn">Save</button>
+        <button id="edit-client-archive-btn" class="secondary-btn">Archiver</button>
+        <button id="cancel-edit-client-btn" class="secondary-btn">Annuler</button>
+        <button id="save-edit-client-btn" class="primary-btn">Enregistrer</button>
       </div>
     </div>
   </div>

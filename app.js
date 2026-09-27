@@ -116,7 +116,7 @@ buttons.forEach((button) => {
 // --- TODAY'S DATE LABEL ---
 const todayDateLabel = document.getElementById('today-date-label');
 if (todayDateLabel) {
-  todayDateLabel.textContent = new Date().toLocaleDateString('en-GB', {
+  todayDateLabel.textContent = new Date().toLocaleDateString('fr-FR', {
     weekday: 'short', day: 'numeric', month: 'short'
   });
 }
@@ -163,7 +163,7 @@ if (savePricesBtn) {
     });
     loadPricesUI();
     if (priceStatus) {
-      priceStatus.textContent = 'Prices saved & locked successfully!';
+      priceStatus.textContent = 'Prix enregistrés et verrouillés !';
       setTimeout(() => { priceStatus.textContent = ''; }, 2500);
     }
   });
@@ -203,7 +203,7 @@ function renderManageClients() {
   const archivedClients = allClients.filter(c => c.isActive === false);
 
   if (allClients.length === 0) {
-    listEl.innerHTML = '<p class="empty-hint">No clients added yet.</p>';
+    listEl.innerHTML = '<p class="empty-hint">Aucun client ajouté pour le moment.</p>';
     return;
   }
 
@@ -212,12 +212,12 @@ function renderManageClients() {
     li.className = 'client-list-item-clickable';
     li.innerHTML = `
       <span class="client-name">${escapeHtml(client.name)}</span>
-      <button class="delete-btn">Archive</button>
+      <button class="delete-btn">Archiver</button>
     `;
     li.onclick = () => openEditClientModal(client.id);
     li.querySelector('.delete-btn').onclick = (e) => {
       e.stopPropagation();
-      if (confirm(`Archive ${client.name}? Past history remains safe.`)) archiveClient(client.id);
+      if (confirm(`Archiver ${client.name} ? L'historique reste conservé.`)) archiveClient(client.id);
     };
     listEl.appendChild(li);
   });
@@ -225,13 +225,13 @@ function renderManageClients() {
   if (archivedClients.length > 0) {
     const details = document.createElement('details');
     details.className = 'archived-details';
-    details.innerHTML = `<summary class="archived-summary">Archived Clients (${archivedClients.length})</summary><ul class="client-list archived-ul"></ul>`;
+    details.innerHTML = `<summary class="archived-summary">Clients archivés (${archivedClients.length})</summary><ul class="client-list archived-ul"></ul>`;
     const archivedUl = details.querySelector('.archived-ul');
 
     archivedClients.forEach(client => {
       const li = document.createElement('li');
       li.className = 'archived-item';
-      li.innerHTML = `<span class="client-name">${escapeHtml(client.name)}</span><button class="secondary-btn restore-btn">Restore</button>`;
+      li.innerHTML = `<span class="client-name">${escapeHtml(client.name)}</span><button class="secondary-btn restore-btn">Restaurer</button>`;
       li.querySelector('.restore-btn').onclick = () => restoreClient(client.id);
       archivedUl.appendChild(li);
     });
@@ -267,7 +267,7 @@ function openEditClientModal(clientId) {
   if (editClientStatus) editClientStatus.textContent = '';
 
   if (editClientGroupSelect) {
-    let options = '<option value="">None</option>';
+    let options = '<option value="">Aucun</option>';
     getGroups().forEach(group => {
       options += `<option value="${escapeHtml(group.id)}">${escapeHtml(group.name)}</option>`;
     });
@@ -288,7 +288,7 @@ document.getElementById('save-edit-client-btn')?.addEventListener('click', () =>
   if (!currentEditClientId) return;
   const name = editClientNameInput.value.trim();
   if (!name) {
-    if (editClientStatus) editClientStatus.textContent = 'Name cannot be empty.';
+    if (editClientStatus) editClientStatus.textContent = 'Le nom ne peut pas être vide.';
     return;
   }
   const clients = getClients();
@@ -306,7 +306,7 @@ document.getElementById('cancel-edit-client-btn')?.addEventListener('click', clo
 document.getElementById('edit-client-archive-btn')?.addEventListener('click', () => {
   if (!currentEditClientId) return;
   const client = getClients().find(c => c.id === currentEditClientId);
-  if (client && confirm(`Archive ${client.name}? Past history remains safe.`)) {
+  if (client && confirm(`Archiver ${client.name} ? L'historique reste conservé.`)) {
     archiveClient(currentEditClientId);
     closeEditClientModal();
   }
@@ -369,18 +369,18 @@ function createClientCardElement(client, salesForDay) {
     card.innerHTML = `
       <div class="client-card-info">
         <span class="client-name">${safeName}</span>
-        <span class="client-sale-summary">Milk: <strong>${totalMilk}</strong> | Lben: <strong>${totalLben}</strong></span>
+        <span class="client-sale-summary">Lait : <strong>${totalMilk}</strong> | Lben : <strong>${totalLben}</strong></span>
       </div>
       <div class="client-amount-block">
         <span class="client-amount client-amount--${statusClass}">${formatMoney(totalAmount)}</span>
         <div class="client-status-line client-status-line--${statusClass}">
-          ${isFullyPaid ? 'Fully paid' : `Owes ${formatMoney(totalAmount - totalPaid)}`}
+          ${isFullyPaid ? 'Payé intégralement' : `Doit ${formatMoney(totalAmount - totalPaid)}`}
         </div>
       </div>
     `;
   } else {
     card.className = 'client-card';
-    card.innerHTML = `<span class="client-name">${safeName}</span><span class="tap-hint">Tap to add</span>`;
+    card.innerHTML = `<span class="client-name">${safeName}</span><span class="tap-hint">Appuyer pour ajouter</span>`;
   }
   card.onclick = () => openSaleModal(client.id, client.name);
   return card;
@@ -444,7 +444,7 @@ function renderDailyClients() {
       <summary class="group-summary">
         <div style="display:flex; justify-content:space-between; align-items:center; width:100%;">
           <span class="group-title" style="font-size:15px; font-weight:800;">${titleText} (${groupClients.length})</span>
-          <span class="${hasPendingSales ? 'group-badge has-pending' : 'group-badge'}">${hasPendingSales ? 'Pending' : 'Settled'}</span>
+          <span class="${hasPendingSales ? 'group-badge has-pending' : 'group-badge'}">${hasPendingSales ? 'En attente' : 'Soldé'}</span>
         </div>
       </summary>
       <div class="client-grid" id="group-container-${group.id}" style="margin-top:12px;"></div>
@@ -465,8 +465,8 @@ function renderDailyClients() {
     details.innerHTML = `
       <summary class="group-summary">
         <div style="display:flex; justify-content:space-between; align-items:center; width:100%;">
-          <span class="group-title" style="font-size:15px; font-weight:800;">Unassigned Clients (${unassignedClients.length})</span>
-          <span class="${hasPendingSales ? 'group-badge has-pending' : 'group-badge'}">${hasPendingSales ? 'Pending' : 'Settled'}</span>
+          <span class="group-title" style="font-size:15px; font-weight:800;">Clients non assignés (${unassignedClients.length})</span>
+          <span class="${hasPendingSales ? 'group-badge has-pending' : 'group-badge'}">${hasPendingSales ? 'En attente' : 'Soldé'}</span>
         </div>
       </summary>
       <div class="client-grid" id="group-container-unassigned" style="margin-top:12px;"></div>
@@ -517,18 +517,18 @@ function openSaleModal(clientId, clientName) {
       if (isYesterday(lastSale.date)) {
         const tMilk = lastSale.tomorrowMilk || 0, tLben = lastSale.tomorrowLben || 0;
         if (tMilk > 0 || tLben > 0) {
-          remindersContainer.innerHTML += `<div class="reminder-cloud blue-cloud">🛒 Planned: <strong>${tMilk} Milk</strong> | <strong>${tLben} Lben</strong></div>`;
+          remindersContainer.innerHTML += `<div class="reminder-cloud blue-cloud">🛒 Prévu : <strong>${tMilk} Lait</strong> | <strong>${tLben} Lben</strong></div>`;
         }
       }
       const remCrates = lastSale.remainingFunds || 0;
       if (remCrates > 0) {
         const crateCloud = document.createElement('div');
         crateCloud.className = 'reminder-cloud orange-cloud';
-        crateCloud.innerHTML = `📦 Owes: <strong>${remCrates} Empties</strong> <button type="button" class="check-funds-btn">✔</button>`;
+        crateCloud.innerHTML = `📦 Doit : <strong>${remCrates} fonds vides</strong> <button type="button" class="check-funds-btn">✔</button>`;
         crateCloud.querySelector('.check-funds-btn').onclick = () => {
           clearPastCratesFlag = true;
           crateCloud.className = 'reminder-cloud reminder-cloud--done';
-          crateCloud.innerHTML = '✅ Empties returning (click Save)';
+          crateCloud.innerHTML = '✅ Fonds retournés (cliquez sur Enregistrer)';
         };
         remindersContainer.appendChild(crateCloud);
       }
@@ -538,11 +538,11 @@ function openSaleModal(clientId, clientName) {
     if (totalDebt > 0) {
       const debtCloud = document.createElement('div');
       debtCloud.className = 'reminder-cloud red-cloud';
-      debtCloud.innerHTML = `💰 Debt: <strong>${formatMoney(totalDebt)}</strong> <button type="button" class="check-funds-btn">✔</button>`;
+      debtCloud.innerHTML = `💰 Dette : <strong>${formatMoney(totalDebt)}</strong> <button type="button" class="check-funds-btn">✔</button>`;
       debtCloud.querySelector('.check-funds-btn').onclick = () => {
         clearPastDebtFlag = true;
         debtCloud.className = 'reminder-cloud reminder-cloud--done';
-        debtCloud.innerHTML = '✅ Debt paying (click Save)';
+        debtCloud.innerHTML = '✅ Dette réglée (cliquez sur Enregistrer)';
       };
       remindersContainer.appendChild(debtCloud);
     }
@@ -770,10 +770,10 @@ function renderHistoryScreen() {
     if (debtors.length > 0) {
       const card = document.createElement('div');
       card.className = 'card debt-summary-card';
-      let html = `<h2 class="debt-summary-heading"><span>Total Unpaid Debts</span><span>${formatMoney(debtors.reduce((sum, id) => sum + debtMap[id], 0))}</span></h2><ul class="client-list client-list--flush">`;
+      let html = `<h2 class="debt-summary-heading"><span>Total des dettes impayées</span><span>${formatMoney(debtors.reduce((sum, id) => sum + debtMap[id], 0))}</span></h2><ul class="client-list client-list--flush">`;
       debtors.forEach(id => {
         const client = allClients.find(c => c.id == id);
-        html += `<li class="debt-list-item"><span class="client-name">${client ? escapeHtml(client.name) : 'Unknown'}</span><span class="debt-amount">${formatMoney(debtMap[id])}</span></li>`;
+        html += `<li class="debt-list-item"><span class="client-name">${client ? escapeHtml(client.name) : 'Inconnu'}</span><span class="debt-amount">${formatMoney(debtMap[id])}</span></li>`;
       });
       card.innerHTML = html + `</ul>`;
       debtContainer.appendChild(card);
@@ -781,7 +781,7 @@ function renderHistoryScreen() {
   }
 
   if (sales.length === 0) {
-    container.innerHTML = '<p class="empty-hint">No sales history available.</p>';
+    container.innerHTML = '<p class="empty-hint">Aucun historique de ventes disponible.</p>';
     return;
   }
 
@@ -789,11 +789,11 @@ function renderHistoryScreen() {
   const tree = new Map();
   sales.forEach(sale => {
     const d = new Date(sale.date);
-    const year = d.getFullYear().toString(), month = d.toLocaleString('default', { month: 'long' });
+    const year = d.getFullYear().toString(), month = d.toLocaleString('fr-FR', { month: 'long' });
     const diff = d.getDate() - d.getDay() + (d.getDay() === 0 ? -6 : 1);
     const monday = new Date(d); monday.setDate(diff);
-    const week = `Week of ${monday.toLocaleDateString('default', { month: 'short', day: 'numeric' })}`;
-    const day = d.toLocaleDateString('default', { weekday: 'short', month: 'short', day: 'numeric' });
+    const week = `Semaine du ${monday.toLocaleDateString('fr-FR', { month: 'short', day: 'numeric' })}`;
+    const day = d.toLocaleDateString('fr-FR', { weekday: 'short', month: 'short', day: 'numeric' });
 
     if (!tree.has(year)) tree.set(year, new Map());
     if (!tree.get(year).has(month)) tree.get(year).set(month, new Map());
@@ -819,7 +819,7 @@ function renderHistoryScreen() {
           const salesList = document.createElement('div'); salesList.className = 'sales-list';
           daySales.forEach(sale => {
             const isFullyPaid = sale.paidAmount >= sale.totalAmount;
-            const clientName = allClients.find(c => c.id === sale.clientId)?.name || 'Unknown';
+            const clientName = allClients.find(c => c.id === sale.clientId)?.name || 'Inconnu';
             salesList.innerHTML += `
               <div class="card history-sale-card ${isFullyPaid ? 'is-paid' : 'is-unpaid'}">
                 <div class="sale-card-row">
@@ -827,8 +827,8 @@ function renderHistoryScreen() {
                   <span class="sale-card-total">${formatMoney(sale.totalAmount)}</span>
                 </div>
                 <div class="sale-card-meta">
-                  <span>Milk: <strong>${sale.milkQty}</strong> | Lben: <strong>${sale.lbenQty}</strong></span>
-                  <span class="sale-card-status ${isFullyPaid ? 'is-paid' : 'is-unpaid'}">${isFullyPaid ? 'Fully Paid' : `Paid: ${formatMoney(sale.paidAmount)}`}</span>
+                  <span>Lait : <strong>${sale.milkQty}</strong> | Lben : <strong>${sale.lbenQty}</strong></span>
+                  <span class="sale-card-status ${isFullyPaid ? 'is-paid' : 'is-unpaid'}">${isFullyPaid ? 'Payé intégralement' : `Payé : ${formatMoney(sale.paidAmount)}`}</span>
                 </div>
               </div>`;
           });
@@ -857,9 +857,9 @@ document.getElementById('import-data-input')?.addEventListener('change', (e) => 
   reader.onload = () => {
     const data = safeParse(reader.result, null);
     if (!data || !Array.isArray(data.clients) || !Array.isArray(data.sales)) {
-      alert("That file doesn't look like a Milk Manager backup."); return;
+      alert("Ce fichier ne semble pas être une sauvegarde de Milk Manager."); return;
     }
-    if (!confirm('This replaces all current clients, sales, prices and stock. Continue?')) return;
+    if (!confirm('Cela remplacera tous les clients, ventes, prix et stock actuels. Continuer ?')) return;
     
     if (data.prices) localStorage.setItem('milk_app_prices', JSON.stringify(data.prices));
     localStorage.setItem('milk_app_clients', JSON.stringify(data.clients));
@@ -868,7 +868,7 @@ document.getElementById('import-data-input')?.addEventListener('change', (e) => 
     if (data.groups) saveGroups(data.groups);
 
     loadPricesUI(); renderManageClients(); renderDailyClients(); renderHistoryScreen(); renderDailyStockUI(); renderGroupsUI(); populateClientGroupDropdown();
-    alert('Backup restored successfully.');
+    alert('Sauvegarde restaurée avec succès.');
   };
   reader.readAsText(file);
 });
