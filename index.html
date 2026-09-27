@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, viewport-fit=cover">
-  <title>Lait Manager</title>
+  <title>Milk Manager</title>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Manrope:wght@500;600;700;800&display=swap" rel="stylesheet">
@@ -84,7 +84,7 @@
       <hr class="divider">
       <h2>Gérer les clients</h2>
       <div class="card">
-        <div class="form-group row-form" style="gap: 8px;">
+        <div class="form-group row-form add-client-row" style="gap: 8px;">
           <input type="text" id="new-client-name" placeholder="Nom" style="flex: 2;">
           
           <!-- This select dropdown was missing in index_3.html -->
@@ -192,6 +192,14 @@
           <button type="button" id="tomorrow-lben-minus" class="qty-btn">-</button>
           <input type="number" id="sale-tomorrow-lben" placeholder="0" min="0">
           <button type="button" id="tomorrow-lben-plus" class="qty-btn">+</button>
+        </div>
+      </div>
+      <div class="form-group row-form">
+        <label class="modal-product-label modal-product-label--milk">Sachet dû <span>Cassé aujourd'hui</span></label>
+        <div class="qty-control">
+          <button type="button" id="owed-milk-minus" class="qty-btn">-</button>
+          <input type="number" id="sale-owed-milk" placeholder="0" min="0">
+          <button type="button" id="owed-milk-plus" class="qty-btn">+</button>
         </div>
       </div>
       <div class="modal-actions">
