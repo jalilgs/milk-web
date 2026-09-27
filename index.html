@@ -2,76 +2,81 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, viewport-fit=cover">
   <title>Milk Manager</title>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Manrope:wght@500;600;700;800&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="style.css">
 </head>
 <body>
 
   <main id="app">
     <section id="clients-screen" class="screen active">
-      <h1>Daily Deliveries</h1>
+      <h1>Daily Deliveries <span id="today-date-label" class="today-date"></span></h1>
 
-<!-- TODAY'S STOCK CARD -->
+      <!-- TODAY'S STOCK CARD -->
       <div class="card" id="daily-stock-card">
-        
-        <!-- Inline Header, Inputs, and Button -->
-        <div style="display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 8px; margin-bottom: 20px;">
-          <h2 style="margin: 0; font-size: 18px;">Today's Stock</h2>
-          
-          <div style="display: flex; align-items: center; gap: 6px;">
-            <label style="font-size: 13px; font-weight: bold; color: #333;">Milk:</label>
-            <input type="number" id="stock-milk-owned" placeholder="0" min="0" style="width: 65px; padding: 6px; border: 1px solid #ccc; border-radius: 6px; font-size: 14px; text-align: center;">
-            
-            <label style="font-size: 13px; font-weight: bold; color: #333; margin-left: 4px;">Lben:</label>
-            <input type="number" id="stock-lben-owned" placeholder="0" min="0" style="width: 65px; padding: 6px; border: 1px solid #ccc; border-radius: 6px; font-size: 14px; text-align: center;">
-            
-            <button id="save-stock-btn" class="primary-btn" style="width: auto; padding: 6px 12px; margin-left: 4px;">Validate</button>
-            <button id="edit-stock-btn" class="secondary-btn" style="display: none; width: auto; padding: 6px 12px; margin-left: 4px;">Edit</button>
+        <div class="stock-header">
+          <h2>Today's Stock</h2>
+          <div class="stock-inputs">
+            <label class="product-label product-label--milk" for="stock-milk-owned">Milk</label>
+            <input type="number" id="stock-milk-owned" class="stock-input" placeholder="0" min="0">
+
+            <label class="product-label product-label--lben" for="stock-lben-owned">Lben</label>
+            <input type="number" id="stock-lben-owned" class="stock-input" placeholder="0" min="0">
+
+            <button id="save-stock-btn" class="primary-btn btn-compact">Validate</button>
+            <button id="edit-stock-btn" class="secondary-btn btn-compact" style="display: none;">Edit</button>
           </div>
         </div>
 
-        <!-- Display Squares Section -->
-        <div style="display: flex; gap: 12px;">
-          <!-- Milk Square -->
-          <div style="flex: 1; background: #e3f2fd; border: 1px solid #bbdefb; border-radius: 8px; padding: 16px; text-align: center;">
-            <h4 style="margin: 0 0 8px 0; font-size: 14px; color: #1565c0;">Milk Sold</h4>
-            <div id="stock-milk-sold" style="font-size: 36px; font-weight: bold; color: #0d47a1; margin-bottom: 8px;">0</div>
-            <div style="font-size: 13px; font-weight: bold; color: #555;">Remaining: <span id="stock-milk-remaining">0</span></div>
+        <div class="stat-strip">
+          <div class="stat-block stat-block--milk">
+            <span class="stat-label">Milk sold</span>
+            <span class="stat-figure" id="stock-milk-sold">0</span>
+            <span class="stat-sub">Remaining <strong id="stock-milk-remaining">0</strong></span>
           </div>
-          
-          <!-- Lben Square -->
-          <div style="flex: 1; background: #e8f5e9; border: 1px solid #c8e6c9; border-radius: 8px; padding: 16px; text-align: center;">
-            <h4 style="margin: 0 0 8px 0; font-size: 14px; color: #2e7d32;">Lben Sold</h4>
-            <div id="stock-lben-sold" style="font-size: 36px; font-weight: bold; color: #1b5e20; margin-bottom: 8px;">0</div>
-            <div style="font-size: 13px; font-weight: bold; color: #555;">Remaining: <span id="stock-lben-remaining">0</span></div>
+          <div class="stat-block stat-block--lben">
+            <span class="stat-label">Lben sold</span>
+            <span class="stat-figure" id="stock-lben-sold">0</span>
+            <span class="stat-sub">Remaining <strong id="stock-lben-remaining">0</strong></span>
           </div>
         </div>
       </div>
 
-      <div id="daily-clients-grid" class="client-grid"></div>
+      <!-- MAIN CONTAINER FOR GROUPED ACCORDIONS -->
+      <div id="daily-clients-grid"></div>
     </section>
-
-
 
     <section id="manage-screen" class="screen">
       <h1>Manage</h1>
-<h2>Products & Prices</h2>
+      <h2>Products &amp; Prices</h2>
       <div class="card">
-        <div class="form-group">
-          <label for="milk-price">Milk Price (DA / fund):</label>
-          <input type="number" id="milk-price" placeholder="e.g. 50">
+        <!-- DISPLAY MODE (Locked) -->
+        <div id="prices-display-view" class="prices-display-row" style="display: none;">
+          <div class="price-display-block">
+            <span class="product-label product-label--milk">Milk</span>
+            <span class="price-figure milk-figure" id="milk-price-display">0</span>
+          </div>
+          <div class="price-display-block">
+            <span class="product-label product-label--lben">Lben</span>
+            <span class="price-figure lben-figure" id="lben-price-display">0</span>
+          </div>
+          <button id="edit-prices-btn" class="secondary-btn btn-compact edit-icon-btn">Edit</button>
         </div>
-        <div class="form-group">
-          <label for="lben-price">Lben Price (DA / fund):</label>
-          <input type="number" id="lben-price" placeholder="e.g. 60">
-        </div>
-        <div style="display: flex; gap: 8px;">
-          <button id="save-prices-btn" class="primary-btn" style="flex: 1;">Save Prices</button>
-          <button id="edit-prices-btn" class="secondary-btn" style="display: none; flex: 1;">Edit Prices</button>
+
+        <!-- EDIT MODE (Unlocked) -->
+        <div id="prices-edit-view">
+          <div class="form-group">
+            <label class="product-label product-label--milk" for="milk-price">Milk price <span>DA / fond</span></label>
+            <input type="number" id="milk-price" placeholder="e.g. 345">
+          </div>
+          <div class="form-group">
+            <label class="product-label product-label--lben" for="lben-price">Lben price <span>DA / fond</span></label>
+            <input type="number" id="lben-price" placeholder="e.g. 1200">
+          </div>
+          <button id="save-prices-btn" class="primary-btn">Save Prices</button>
         </div>
         <p id="price-status" class="status-msg"></p>
       </div>
@@ -79,15 +84,43 @@
       <hr class="divider">
       <h2>Manage Clients</h2>
       <div class="card">
-        <div class="form-group row-form">
-          <input type="text" id="new-client-name" placeholder="Client Name (e.g. Ahmed)">
-          <button id="add-client-btn" class="primary-btn add-btn">Add</button>
+        <div class="form-group row-form" style="gap: 8px;">
+          <input type="text" id="new-client-name" placeholder="Name" style="flex: 2;">
+          
+          <!-- This select dropdown was missing in index_3.html -->
+          <select id="client-group-select" class="custom-select" >
+            <option value="">None</option>
+          </select>
+
+          <button id="add-client-btn" class="primary-btn add-btn" style="flex: 1;">Add</button>
         </div>
         <ul id="manage-client-list" class="client-list"></ul>
       </div>
 
+      <div class="card">
+        <h2>Manage Groups / Routes</h2>
+        <form id="addGroupForm" class="row-form">
+          <input type="text" id="groupNameInput" placeholder="Group Name (e.g. Bologhine)" required>
+          <button type="submit" class="primary-btn btn-compact">Add</button>
+        </form>
+        <div id="manageGroupsList"></div>
+      </div>
+
+
+      <hr class="divider">
+      <h2>Backup &amp; Restore</h2>
+      <div class="card">
+        <p class="hint-text">Your data lives only in this browser. Export a backup now and then so a cleared cache or a new phone never costs you a client list, your prices, or your sales history.</p>
+        <div class="backup-actions">
+          <button id="export-data-btn" class="secondary-btn">Export backup</button>
+          <label for="import-data-input" class="secondary-btn file-btn">Import backup</label>
+          <input type="file" id="import-data-input" accept="application/json" hidden>
+        </div>
+        <p id="backup-status" class="status-msg"></p>
+      </div>
     </section>
 
+    <!-- History Screen & Modal (identical to previous setup) -->
     <section id="history-screen" class="screen">
       <h1>History</h1>
       <div id="debt-summary-container"></div>
@@ -100,16 +133,14 @@
     <button class="tab-button" data-target="manage-screen">Manage</button>
     <button class="tab-button" data-target="history-screen">History</button>
   </nav>
-  
-<!-- SALE MODAL (Hidden by default) -->
+
+  <!-- SALE MODAL -->
   <div id="sale-modal" class="modal-overlay">
     <div class="modal-content card">
       <h2 id="modal-client-name">Client Name</h2>
-      
-      <div id="modal-reminders" style="display: flex; gap: 8px; justify-content: center; margin-bottom: 16px; flex-wrap: wrap;"></div>
-        
+      <div id="modal-reminders" class="modal-reminders"></div>
       <div class="form-group row-form">
-        <label>Milk (Funds):</label>
+        <label class="modal-product-label modal-product-label--milk">Milk <span>Funds</span></label>
         <div class="qty-control">
           <button type="button" id="milk-minus" class="qty-btn">-</button>
           <input type="number" id="sale-milk-qty" placeholder="0" min="0">
@@ -117,67 +148,78 @@
         </div>
       </div>
       <div class="form-group row-form">
-        <label>Lben (Funds):</label>
+        <label class="modal-product-label modal-product-label--lben">Lben <span>Funds</span></label>
         <div class="qty-control">
           <button type="button" id="lben-minus" class="qty-btn">-</button>
           <input type="number" id="sale-lben-qty" placeholder="0" min="0">
           <button type="button" id="lben-plus" class="qty-btn">+</button>
         </div>
       </div>
-
-<div class="modal-totals">
+      <div class="modal-totals">
         <span>Total: </span>
         <span id="sale-total-price" class="total-price">0 DA</span>
       </div>
-
-      <!-- NEW: Paid Amount with "Full" Button & Remaining Money -->
       <div class="form-group row-form">
         <label>Paid Amount:</label>
-        <div style="display: flex; gap: 8px; justify-content: flex-end;">
-          <input type="number" id="sale-paid-amount" placeholder="0" style="width: 80px;">
-          <button id="full-pay-btn" class="secondary-btn" style="flex: 0; padding: 0 12px; font-size: 14px;">Full</button>
+        <div class="paid-row">
+          <input type="number" id="sale-paid-amount" placeholder="0">
+          <button id="full-pay-btn" class="secondary-btn btn-compact">Full</button>
         </div>
       </div>
-      <div class="modal-totals" style="background: #fff3e0; margin-top: -6px; padding: 8px 12px;">
-        <span style="font-size: 14px; color: #555;">Remaining Money: </span>
-        <span id="sale-remaining-money" style="color: #e65100; font-size: 16px;">0 DA</span>
+      <div class="modal-totals modal-totals--remaining">
+        <span class="remaining-money-label">Remaining Money: </span>
+        <span id="sale-remaining-money" class="remaining-money-figure">0 DA</span>
       </div>
-
-
-<!-- Direct Remaining Funds Input -->
-<!-- Remaining Funds with +/- -->
-<div class="form-group row-form">
-  <label>Empty Crates (Fonds):</label>
-  <div class="qty-control">
-    <button type="button" id="funds-minus" class="qty-btn">-</button>
-    <input type="number" id="sale-remaining-funds" placeholder="0" min="0">
-    <button type="button" id="funds-plus" class="qty-btn">+</button>
-  </div>
-</div>
-
-<!-- Tomorrow Milk -->
-<div class="form-group row-form">
-  <label>Tomorrow Milk:</label>
-  <div class="qty-control">
-    <button type="button" id="tomorrow-milk-minus" class="qty-btn">-</button>
-    <input type="number" id="sale-tomorrow-milk" placeholder="0" min="0">
-    <button type="button" id="tomorrow-milk-plus" class="qty-btn">+</button>
-  </div>
-</div>
-
-<!-- Tomorrow Lben -->
-<div class="form-group row-form">
-  <label>Tomorrow Lben:</label>
-  <div class="qty-control">
-    <button type="button" id="tomorrow-lben-minus" class="qty-btn">-</button>
-    <input type="number" id="sale-tomorrow-lben" placeholder="0" min="0">
-    <button type="button" id="tomorrow-lben-plus" class="qty-btn">+</button>
-  </div>
-</div>
-
+      <div class="form-group row-form">
+        <label>Empty Crates (Fonds):</label>
+        <div class="qty-control">
+          <button type="button" id="funds-minus" class="qty-btn">-</button>
+          <input type="number" id="sale-remaining-funds" placeholder="0" min="0">
+          <button type="button" id="funds-plus" class="qty-btn">+</button>
+        </div>
+      </div>
+      <div class="form-group row-form">
+        <label class="modal-product-label modal-product-label--milk">Tomorrow Milk</label>
+        <div class="qty-control">
+          <button type="button" id="tomorrow-milk-minus" class="qty-btn">-</button>
+          <input type="number" id="sale-tomorrow-milk" placeholder="0" min="0">
+          <button type="button" id="tomorrow-milk-plus" class="qty-btn">+</button>
+        </div>
+      </div>
+      <div class="form-group row-form">
+        <label class="modal-product-label modal-product-label--lben">Tomorrow Lben</label>
+        <div class="qty-control">
+          <button type="button" id="tomorrow-lben-minus" class="qty-btn">-</button>
+          <input type="number" id="sale-tomorrow-lben" placeholder="0" min="0">
+          <button type="button" id="tomorrow-lben-plus" class="qty-btn">+</button>
+        </div>
+      </div>
       <div class="modal-actions">
         <button id="cancel-sale-btn" class="secondary-btn">Cancel</button>
         <button id="save-sale-btn" class="primary-btn">Save Sale</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- EDIT CLIENT MODAL -->
+  <div id="edit-client-modal" class="modal-overlay">
+    <div class="modal-content card">
+      <h2>Edit Client</h2>
+      <div class="form-group">
+        <label for="edit-client-name">Name</label>
+        <input type="text" id="edit-client-name" placeholder="Name">
+      </div>
+      <div class="form-group">
+        <label for="edit-client-group-select">Group / Route</label>
+        <select id="edit-client-group-select" class="custom-select">
+          <option value="">None</option>
+        </select>
+      </div>
+      <p id="edit-client-status" class="status-msg"></p>
+      <div class="modal-actions">
+        <button id="edit-client-archive-btn" class="secondary-btn">Archive</button>
+        <button id="cancel-edit-client-btn" class="secondary-btn">Cancel</button>
+        <button id="save-edit-client-btn" class="primary-btn">Save</button>
       </div>
     </div>
   </div>
