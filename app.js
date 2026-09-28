@@ -414,16 +414,16 @@ function getGroupMoneyStats(groupClients, todaySales) {
   return { total, paid, left: Math.max(0, total - paid) };
 }
 
-function groupStatsHtml(groupClients, todaySales) {
+function groupBadgeHtml(hasPendingSales, groupClients, todaySales) {
   const { total, paid, left } = getGroupMoneyStats(groupClients, todaySales);
+  if (total === 0) return '';
   return `
-    <div class="group-money">
-      <div class="group-money__item"><span>Total</span><strong>${formatMoney(total)}</strong></div>
-      <div class="group-money__item group-money__item--paid"><span>Payé</span><strong>${formatMoney(paid)}</strong></div>
-      <div class="group-money__item group-money__item--left"><span>Reste</span><strong>${formatMoney(left)}</strong></div>
+    <div class="group-money-row">
+      <span class="money-chip">Total <strong>${formatMoney(total)}</strong></span>
+      <span class="money-chip money-chip--paid">Payé <strong>${formatMoney(paid)}</strong></span>
+      ${left > 0 ? `<span class="money-chip money-chip--left">Reste <strong>${formatMoney(left)}</strong></span>` : ''}
     </div>`;
 }
-
 
 // Replaces the scattered group logic into one unified view
 function renderDailyClients() {
@@ -468,7 +468,7 @@ function renderDailyClients() {
           <span class="group-title" style="font-size:15px; font-weight:800;">${titleText} (${groupClients.length})</span>
           <span class="${hasPendingSales ? 'group-badge has-pending' : 'group-badge'}">${hasPendingSales ? 'En attente' : 'Soldé'}</span>
         </div>
-        ${groupStatsHtml(groupClients, todaySales)}
+        ${groupBadgeHtml(hasPendingSales, groupClients, todaySales)}
       </summary>
       <div class="client-grid" id="group-container-${group.id}" style="margin-top:12px;"></div>
     `;
@@ -483,17 +483,17 @@ function renderDailyClients() {
     const hasPendingSales = unassignedClients.some(client => !hasLoggedSaleToday(client.id, todaySales));
     const details = document.createElement('details');
     details.className = 'group-accordion';
-    if (hasPendingSales) details.open = true;
+    // if (hasPendingSales) details.open = true;
 
     details.open = true;
-
+    
     details.innerHTML = `
       <summary class="group-summary">
         <div style="display:flex; justify-content:space-between; align-items:center; width:100%;">
           <span class="group-title" style="font-size:15px; font-weight:800;">Clients non assignés (${unassignedClients.length})</span>
           <span class="${hasPendingSales ? 'group-badge has-pending' : 'group-badge'}">${hasPendingSales ? 'En attente' : 'Soldé'}</span>
         </div>
-        ${groupStatsHtml(unassignedClients, todaySales)}
+        ${groupBadgeHtml(hasPendingSales, unassignedClients, todaySales)}
       </summary>
       <div class="client-grid" id="group-container-unassigned" style="margin-top:12px;"></div>
     `;
@@ -764,6 +764,17 @@ function renderDailyStockUI() {
   if (document.getElementById('stock-lben-sold')) document.getElementById('stock-lben-sold').textContent = totalLbenSold;
   if (document.getElementById('stock-milk-remaining')) document.getElementById('stock-milk-remaining').textContent = (parseFloat(stock.milkOwned) || 0) - totalMilkSold;
   if (document.getElementById('stock-lben-remaining')) document.getElementById('stock-lben-remaining').textContent = (parseFloat(stock.lbenOwned) || 0) - totalLbenSold;
+
+  const moneyTotal = todaySales.reduce((sum, s) => sum + (parseFloat(s.totalAmount) || 0), 0);
+  const moneyPaid = todaySales.reduce((sum, s) => sum + (parseFloat(s.paidAmount) || 0), 0);
+  const moneyLeft = Math.max(0, moneyTotal - moneyPaid);
+
+  const moneyTotalEl = document.getElementById('money-total');
+  const moneyPaidEl = document.getElementById('money-paid');
+  const moneyLeftEl = document.getElementById('money-left');
+  if (moneyTotalEl) moneyTotalEl.textContent = formatMoney(moneyTotal);
+  if (moneyPaidEl) moneyPaidEl.textContent = formatMoney(moneyPaid);
+  if (moneyLeftEl) moneyLeftEl.textContent = formatMoney(moneyLeft);
 }
 
 document.getElementById('save-stock-btn')?.addEventListener('click', () => {
