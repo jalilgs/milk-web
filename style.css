@@ -905,13 +905,16 @@ h2 { font-size: 16px; letter-spacing: -0.01em; }
 .row-form .dropdown-wrapper { flex: 2; width: auto; min-width: 0; }
 
 @media (max-width: 480px) {
-  .add-client-row {
+  .add-client-row,
+  #addGroupForm {
     flex-direction: column;
     align-items: stretch;
   }
   .add-client-row input,
   .add-client-row .dropdown-wrapper,
-  .add-client-row button {
+  .add-client-row button,
+  #addGroupForm input,
+  #addGroupForm button {
     flex: none;
     width: 100%;
   }

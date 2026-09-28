@@ -436,7 +436,7 @@ function renderDailyClients() {
 
     const details = document.createElement('details');
     details.className = 'group-accordion';
-    if (hasPendingSales) details.open = true;
+    
 
     const titleText = escapeHtml(group.name);
 
@@ -462,6 +462,8 @@ function renderDailyClients() {
     details.className = 'group-accordion';
     if (hasPendingSales) details.open = true;
 
+    details.open = true;
+    
     details.innerHTML = `
       <summary class="group-summary">
         <div style="display:flex; justify-content:space-between; align-items:center; width:100%;">
