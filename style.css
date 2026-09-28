@@ -977,3 +977,38 @@ h2 { font-size: 16px; letter-spacing: -0.01em; }
 }
 .dropdown-option:hover { background: var(--bg-alt); }
 .dropdown-option.selected { background: var(--success-bg); color: var(--primary); }
+
+
+
+.group-money {
+  display: flex;
+  gap: 8px;
+  margin-top: 12px;
+}
+.group-money__item {
+  flex: 1;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
+  padding: 8px 10px;
+  border: 1px solid var(--border-color);
+  border-radius: 10px;
+  background: var(--bg-alt);
+}
+.group-money__item span {
+  font-size: 11px;
+  font-weight: 700;
+  color: var(--text-muted);
+}
+.group-money__item strong {
+  font-size: 14px;
+  font-weight: 800;
+  font-variant-numeric: tabular-nums;
+  color: var(--text-dark);
+  white-space: nowrap;
+}
+.group-money__item--paid { background: var(--success-bg); border-color: var(--success-border); }
+.group-money__item--paid strong { color: var(--success-text); }
+.group-money__item--left { background: var(--danger-bg); border-color: var(--danger-border); }
+.group-money__item--left strong { color: var(--danger-text); }

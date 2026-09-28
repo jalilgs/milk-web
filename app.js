@@ -403,6 +403,28 @@ const remainingMoneyLabel = document.getElementById('sale-remaining-money');
 const tomorrowMilkInput = document.getElementById('sale-tomorrow-milk');
 const tomorrowLbenInput = document.getElementById('sale-tomorrow-lben');
 
+function getGroupMoneyStats(groupClients, todaySales) {
+  const ids = new Set(groupClients.map(c => String(c.id)));
+  let total = 0, paid = 0;
+  todaySales.forEach(s => {
+    if (!ids.has(String(s.clientId))) return;
+    total += parseFloat(s.totalAmount) || 0;
+    paid += parseFloat(s.paidAmount) || 0;
+  });
+  return { total, paid, left: Math.max(0, total - paid) };
+}
+
+function groupStatsHtml(groupClients, todaySales) {
+  const { total, paid, left } = getGroupMoneyStats(groupClients, todaySales);
+  return `
+    <div class="group-money">
+      <div class="group-money__item"><span>Total</span><strong>${formatMoney(total)}</strong></div>
+      <div class="group-money__item group-money__item--paid"><span>Payé</span><strong>${formatMoney(paid)}</strong></div>
+      <div class="group-money__item group-money__item--left"><span>Reste</span><strong>${formatMoney(left)}</strong></div>
+    </div>`;
+}
+
+
 // Replaces the scattered group logic into one unified view
 function renderDailyClients() {
   const container = document.getElementById('daily-clients-grid');
@@ -446,6 +468,7 @@ function renderDailyClients() {
           <span class="group-title" style="font-size:15px; font-weight:800;">${titleText} (${groupClients.length})</span>
           <span class="${hasPendingSales ? 'group-badge has-pending' : 'group-badge'}">${hasPendingSales ? 'En attente' : 'Soldé'}</span>
         </div>
+        ${groupStatsHtml(groupClients, todaySales)}
       </summary>
       <div class="client-grid" id="group-container-${group.id}" style="margin-top:12px;"></div>
     `;
@@ -463,13 +486,14 @@ function renderDailyClients() {
     if (hasPendingSales) details.open = true;
 
     details.open = true;
-    
+
     details.innerHTML = `
       <summary class="group-summary">
         <div style="display:flex; justify-content:space-between; align-items:center; width:100%;">
           <span class="group-title" style="font-size:15px; font-weight:800;">Clients non assignés (${unassignedClients.length})</span>
           <span class="${hasPendingSales ? 'group-badge has-pending' : 'group-badge'}">${hasPendingSales ? 'En attente' : 'Soldé'}</span>
         </div>
+        ${groupStatsHtml(unassignedClients, todaySales)}
       </summary>
       <div class="client-grid" id="group-container-unassigned" style="margin-top:12px;"></div>
     `;
