@@ -403,6 +403,28 @@ const remainingMoneyLabel = document.getElementById('sale-remaining-money');
 const tomorrowMilkInput = document.getElementById('sale-tomorrow-milk');
 const tomorrowLbenInput = document.getElementById('sale-tomorrow-lben');
 
+function getGroupMoneyStats(groupClients, todaySales) {
+  const ids = new Set(groupClients.map(c => String(c.id)));
+  let total = 0, paid = 0;
+  todaySales.forEach(s => {
+    if (!ids.has(String(s.clientId))) return;
+    total += parseFloat(s.totalAmount) || 0;
+    paid += parseFloat(s.paidAmount) || 0;
+  });
+  return { total, paid, left: Math.max(0, total - paid) };
+}
+
+function groupBadgeHtml(hasPendingSales, groupClients, todaySales) {
+  const { total, paid, left } = getGroupMoneyStats(groupClients, todaySales);
+  if (total === 0) return '';
+  return `
+    <div class="group-money-row">
+      <span class="money-chip">Total <strong>${formatMoney(total)}</strong></span>
+      <span class="money-chip money-chip--paid">Payé <strong>${formatMoney(paid)}</strong></span>
+      ${left > 0 ? `<span class="money-chip money-chip--left">Reste <strong>${formatMoney(left)}</strong></span>` : ''}
+    </div>`;
+}
+
 // Replaces the scattered group logic into one unified view
 function renderDailyClients() {
   const container = document.getElementById('daily-clients-grid');
@@ -446,6 +468,7 @@ function renderDailyClients() {
           <span class="group-title" style="font-size:15px; font-weight:800;">${titleText} (${groupClients.length})</span>
           <span class="${hasPendingSales ? 'group-badge has-pending' : 'group-badge'}">${hasPendingSales ? 'En attente' : 'Soldé'}</span>
         </div>
+        ${groupBadgeHtml(hasPendingSales, groupClients, todaySales)}
       </summary>
       <div class="client-grid" id="group-container-${group.id}" style="margin-top:12px;"></div>
     `;
@@ -460,7 +483,7 @@ function renderDailyClients() {
     const hasPendingSales = unassignedClients.some(client => !hasLoggedSaleToday(client.id, todaySales));
     const details = document.createElement('details');
     details.className = 'group-accordion';
-    if (hasPendingSales) details.open = true;
+    // if (hasPendingSales) details.open = true;
 
     details.open = true;
     
@@ -470,6 +493,7 @@ function renderDailyClients() {
           <span class="group-title" style="font-size:15px; font-weight:800;">Clients non assignés (${unassignedClients.length})</span>
           <span class="${hasPendingSales ? 'group-badge has-pending' : 'group-badge'}">${hasPendingSales ? 'En attente' : 'Soldé'}</span>
         </div>
+        ${groupBadgeHtml(hasPendingSales, unassignedClients, todaySales)}
       </summary>
       <div class="client-grid" id="group-container-unassigned" style="margin-top:12px;"></div>
     `;
@@ -740,6 +764,17 @@ function renderDailyStockUI() {
   if (document.getElementById('stock-lben-sold')) document.getElementById('stock-lben-sold').textContent = totalLbenSold;
   if (document.getElementById('stock-milk-remaining')) document.getElementById('stock-milk-remaining').textContent = (parseFloat(stock.milkOwned) || 0) - totalMilkSold;
   if (document.getElementById('stock-lben-remaining')) document.getElementById('stock-lben-remaining').textContent = (parseFloat(stock.lbenOwned) || 0) - totalLbenSold;
+
+  const moneyTotal = todaySales.reduce((sum, s) => sum + (parseFloat(s.totalAmount) || 0), 0);
+  const moneyPaid = todaySales.reduce((sum, s) => sum + (parseFloat(s.paidAmount) || 0), 0);
+  const moneyLeft = Math.max(0, moneyTotal - moneyPaid);
+
+  const moneyTotalEl = document.getElementById('money-total');
+  const moneyPaidEl = document.getElementById('money-paid');
+  const moneyLeftEl = document.getElementById('money-left');
+  if (moneyTotalEl) moneyTotalEl.textContent = formatMoney(moneyTotal);
+  if (moneyPaidEl) moneyPaidEl.textContent = formatMoney(moneyPaid);
+  if (moneyLeftEl) moneyLeftEl.textContent = formatMoney(moneyLeft);
 }
 
 document.getElementById('save-stock-btn')?.addEventListener('click', () => {
