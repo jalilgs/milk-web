@@ -1143,7 +1143,7 @@ html[data-text-size="large"] .client-status-line {
 }
 html[data-text-size="large"] .money-block__figure,
 html[data-text-size="large"] .price-figure {
-  font-size: 28px;
+  font-size: 18px;
 }
 html[data-text-size="large"] .stat-figure {
   font-size: 34px;
@@ -1169,7 +1169,7 @@ html[data-text-size="xlarge"] .client-status-line {
 }
 html[data-text-size="xlarge"] .money-block__figure,
 html[data-text-size="xlarge"] .price-figure {
-  font-size: 32px;
+  font-size: 20px;
 }
 html[data-text-size="xlarge"] .stat-figure {
   font-size: 38px;
