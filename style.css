@@ -1096,3 +1096,23 @@ h1 { flex-wrap: wrap; }
 .social-link--facebook:hover { background: #eaf2fe; }
 .social-link--email { color: var(--primary); }
 .social-link--email:hover { background: var(--success-bg); }
+
+
+.quick-pay-btn {
+  padding: 5px 10px;
+  font-size: 16px;
+  font-weight: 700;
+  color: var(--success-text);
+  background: var(--success-bg);
+  border: 1px solid var(--success-border);
+  border-radius: var(--radius-pill);
+  cursor: pointer;
+}
+.quick-pay-btn:active { background: var(--success-border); }
+
+.client-right-block {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex-shrink: 0;
+}

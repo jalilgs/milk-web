@@ -372,17 +372,39 @@ function createClientCardElement(client, salesForDay) {
         <span class="client-name">${safeName}</span>
         <span class="client-sale-summary">Lait : <strong>${totalMilk}</strong> | Lben : <strong>${totalLben}</strong></span>
       </div>
-      <div class="client-amount-block">
-        <span class="client-amount client-amount--${statusClass}">${formatMoney(totalAmount)}</span>
-        <div class="client-status-line client-status-line--${statusClass}">
-          ${isFullyPaid ? 'Payé intégralement' : `Doit ${formatMoney(totalAmount - totalPaid)}`}
+      
+      <div class="client-right-block">
+        <div class="client-amount-block">
+          <span class="client-amount client-amount--${statusClass}">${formatMoney(totalAmount)}</span>
+          <div class="client-status-line client-status-line--${statusClass}">
+            ${isFullyPaid ? 'Payé intégralement' : `Doit ${formatMoney(totalAmount - totalPaid)}`}
+          </div>
         </div>
+        ${!isFullyPaid ? '<button type="button" class="quick-pay-btn">✔</button>' : ''}
       </div>
     `;
   } else {
     card.className = 'client-card';
     card.innerHTML = `<span class="client-name">${safeName}</span><span class="tap-hint">Appuyer pour ajouter</span>`;
   }
+
+  const quickPayBtn = card.querySelector('.quick-pay-btn');
+  if (quickPayBtn) {
+    quickPayBtn.onclick = (e) => {
+      e.stopPropagation();
+      const lastSaleOfDay = cSales[cSales.length - 1];
+      if (!lastSaleOfDay) return;
+      const allSales = getSales();
+      const saleToUpdate = allSales.find(s => s.id === lastSaleOfDay.id);
+      if (saleToUpdate) {
+        const outstanding = cSales.reduce((sum, s) => sum + (parseFloat(s.totalAmount) || 0) - (parseFloat(s.paidAmount) || 0), 0);
+        saleToUpdate.paidAmount = (parseFloat(saleToUpdate.paidAmount) || 0) + outstanding;
+        saveSales(allSales);
+        renderDailyClients();
+      }
+    };
+  }
+
   card.onclick = () => openSaleModal(client.id, client.name);
   return card;
 }
