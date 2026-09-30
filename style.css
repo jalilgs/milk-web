@@ -900,6 +900,9 @@ h2 { font-size: 16px; letter-spacing: -0.01em; }
   font-size: 13px;
 }
 
+.group-title {
+  font-size: 15px;
+}
 
 .dropdown-wrapper { position: relative; width: 100%; }
 .row-form .dropdown-wrapper { flex: 2; width: auto; min-width: 0; }
@@ -1115,4 +1118,90 @@ h1 { flex-wrap: wrap; }
   align-items: center;
   gap: 8px;
   flex-shrink: 0;
+}
+/* --- ACCESSIBILITY & TEXT SIZE SCALING --- */
+
+/* Highlight active button state */
+.text-size-btn.active-size {
+  background: var(--primary);
+  color: #ffffff;
+  border-color: var(--primary);
+}
+
+/* --- LARGE SIZE (+15% - 20%) --- */
+html[data-text-size="large"] .client-name {
+  font-size: 18px;
+}
+html[data-text-size="large"] .client-amount {
+  font-size: 19px;
+}
+html[data-text-size="large"] .client-sale-summary {
+  font-size: 14px;
+}
+html[data-text-size="large"] .client-status-line {
+  font-size: 12px;
+}
+html[data-text-size="large"] .money-block__figure,
+html[data-text-size="large"] .price-figure {
+  font-size: 28px;
+}
+html[data-text-size="large"] .stat-figure {
+  font-size: 34px;
+}
+html[data-text-size="large"] .debt-amount,
+html[data-text-size="large"] .sale-card-name,
+html[data-text-size="large"] .sale-card-total {
+  font-size: 17px;
+}
+
+/* --- VERY LARGE SIZE (+30% - 40%) --- */
+html[data-text-size="xlarge"] .client-name {
+  font-size: 21px;
+}
+html[data-text-size="xlarge"] .client-amount {
+  font-size: 22px;
+}
+html[data-text-size="xlarge"] .client-sale-summary {
+  font-size: 15px;
+}
+html[data-text-size="xlarge"] .client-status-line {
+  font-size: 13px;
+}
+html[data-text-size="xlarge"] .money-block__figure,
+html[data-text-size="xlarge"] .price-figure {
+  font-size: 32px;
+}
+html[data-text-size="xlarge"] .stat-figure {
+  font-size: 38px;
+}
+html[data-text-size="xlarge"] .debt-amount,
+html[data-text-size="xlarge"] .sale-card-name,
+html[data-text-size="xlarge"] .sale-card-total {
+  font-size: 19px;
+}
+
+
+/* =========================================================
+   UNIVERSAL REMINDER & BADGE SCALING
+   Matches any element with 'reminder', 'cloud', 'badge', or 'vide'
+   ========================================================= */
+
+/* --- LARGE TEXT (+15%) --- */
+html[data-text-size="large"] [class*="reminder"],
+html[data-text-size="large"] [class*="cloud"],
+html[data-text-size="large"] [class*="badge"],
+html[data-text-size="large"] .vide,
+html[data-text-size="large"] .empty-reminders,
+html[data-text-size="large"] .empty-state {
+  font-size: 1.15em; /* Scales 15% relative to base size */
+}
+
+/* --- VERY LARGE TEXT (+30%) --- */
+html[data-text-size="xlarge"] [class*="reminder"],
+html[data-text-size="xlarge"] [class*="cloud"],
+html[data-text-size="xlarge"] [class*="badge"],
+html[data-text-size="xlarge"] .vide,
+html[data-text-size="xlarge"] .empty-reminders,
+html[data-text-size="xlarge"] .empty-state {
+  font-size: 1.30em; /* Scales 30% relative to base size */
 }

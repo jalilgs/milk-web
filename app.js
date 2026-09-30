@@ -74,6 +74,17 @@ function refreshDropdownUI(select) {
 
 document.querySelectorAll('.custom-select').forEach(initCustomDropdown);
 
+function applyTextSize(size) {
+  document.documentElement.setAttribute('data-text-size', size);
+  localStorage.setItem('milk_app_text_size', size);
+  document.querySelectorAll('.text-size-btn').forEach(btn => {
+    btn.classList.toggle('active-size', btn.dataset.size === size);
+  });
+}
+document.querySelectorAll('.text-size-btn').forEach(btn => {
+  btn.addEventListener('click', () => applyTextSize(btn.dataset.size));
+});
+applyTextSize(localStorage.getItem('milk_app_text_size') || 'normal');
 
 
 // JSON.parse throws on corrupted/partial localStorage data
@@ -372,7 +383,7 @@ function createClientCardElement(client, salesForDay) {
         <span class="client-name">${safeName}</span>
         <span class="client-sale-summary">Lait : <strong>${totalMilk}</strong> | Lben : <strong>${totalLben}</strong></span>
       </div>
-      
+
       <div class="client-right-block">
         <div class="client-amount-block">
           <span class="client-amount client-amount--${statusClass}">${formatMoney(totalAmount)}</span>
@@ -499,7 +510,7 @@ function renderDailyClients() {
     details.innerHTML = `
       <summary class="group-summary">
         <div style="display:flex; justify-content:space-between; align-items:center; width:100%;">
-          <span class="group-title" style="font-size:15px; font-weight:800;">${titleText} (${groupClients.length})</span>
+          <span class="group-title"  font-weight:800;">${titleText} (${groupClients.length})</span>
           <span class="${hasPendingSales ? 'group-badge has-pending' : 'group-badge'}">${hasPendingSales ? 'En attente' : 'Soldé'}</span>
         </div>
         ${groupBadgeHtml(hasPendingSales, groupClients, todaySales)}
@@ -600,7 +611,8 @@ function openSaleModal(clientId, clientName) {
     if (totalDebt > 0) {
       const debtCloud = document.createElement('div');
       debtCloud.className = 'reminder-cloud red-cloud';
-      debtCloud.innerHTML = `💰 Dette : <strong>${formatMoney(totalDebt)}</strong> <button type="button" class="check-funds-btn">✔</button>`;
+      debtCloud.innerHTML = `<span class="debt-label">💰 Dette :</span> 
+      <strong>${formatMoney(totalDebt)}</strong> <button type="button" class="check-funds-btn">✔</button>`;
       debtCloud.querySelector('.check-funds-btn').onclick = () => {
         clearPastDebtFlag = true;
         debtCloud.className = 'reminder-cloud reminder-cloud--done';
