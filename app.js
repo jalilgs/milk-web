@@ -13,6 +13,7 @@ function escapeHtml(str) {
 }
 
 
+
 // --- CUSTOM DROPDOWN (fully-styled replacement for native <select>) ---
 function initCustomDropdown(select) {
   if (!select || select.dataset.customized === 'true') return;
@@ -425,6 +426,13 @@ function groupBadgeHtml(hasPendingSales, groupClients, todaySales) {
     </div>`;
 }
 
+function getOpenGroupsState() { return safeParse(localStorage.getItem('milk_app_open_groups'), {}); }
+function setGroupOpenState(groupKey, isOpen) {
+  const state = getOpenGroupsState();
+  state[groupKey] = isOpen;
+  localStorage.setItem('milk_app_open_groups', JSON.stringify(state));
+}
+
 // Replaces the scattered group logic into one unified view
 function renderDailyClients() {
   const container = document.getElementById('daily-clients-grid');
@@ -459,6 +467,10 @@ function renderDailyClients() {
     const details = document.createElement('details');
     details.className = 'group-accordion';
     
+    const groupKey = `group-${group.id}`;
+    const savedOpenState = getOpenGroupsState();
+    details.open = Object.prototype.hasOwnProperty.call(savedOpenState, groupKey) ? savedOpenState[groupKey] : hasPendingSales;
+    details.addEventListener('toggle', () => setGroupOpenState(groupKey, details.open));
 
     const titleText = escapeHtml(group.name);
 
@@ -483,9 +495,11 @@ function renderDailyClients() {
     const hasPendingSales = unassignedClients.some(client => !hasLoggedSaleToday(client.id, todaySales));
     const details = document.createElement('details');
     details.className = 'group-accordion';
-    // if (hasPendingSales) details.open = true;
-
-    details.open = true;
+    
+    const groupKey = 'group-unassigned';
+    const savedOpenState = getOpenGroupsState();
+    details.open = Object.prototype.hasOwnProperty.call(savedOpenState, groupKey) ? savedOpenState[groupKey] : true;
+    details.addEventListener('toggle', () => setGroupOpenState(groupKey, details.open));
     
     details.innerHTML = `
       <summary class="group-summary">
