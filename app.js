@@ -12,7 +12,7 @@ function escapeHtml(str) {
     .replace(/'/g, '&#39;');
 }
 
-
+let activeSummaryFilter = { type: 'all' };
 
 // --- CUSTOM DROPDOWN (fully-styled replacement for native <select>) ---
 function initCustomDropdown(select) {
@@ -122,9 +122,15 @@ function showScreen(targetId) {
 buttons.forEach((button) => {
   button.addEventListener('click', () => {
     showScreen(button.dataset.target);
+    
+    // NEW: Re-run the strip logic when the History tab becomes visible
+    // Because of the 'dataset.built' guard, it won't rebuild the HTML, 
+    // it will just fire the scroll calculation now that offsetLeft is measurable.
+    if (button.dataset.target === 'history-screen') {
+      buildDayStrip();
+    }
   });
 });
-
 // --- TODAY'S DATE LABEL ---
 const todayDateLabel = document.getElementById('today-date-label');
 if (todayDateLabel) {
@@ -835,6 +841,147 @@ document.getElementById('edit-stock-btn')?.addEventListener('click', () => {
   renderDailyStockUI();
 });
 
+function getSaturdayFridayRange(dateInput) {
+  const date = new Date(dateInput);
+  date.setHours(0, 0, 0, 0);
+  const diff = (date.getDay() - 6 + 7) % 7; // days since last Saturday
+  const start = new Date(date);
+  start.setDate(date.getDate() - diff);
+  const end = new Date(start);
+  end.setDate(start.getDate() + 6);
+  end.setHours(23, 59, 59, 999);
+  return { start, end };
+}
+
+function populateHistoryWeekSelect(sales) {
+  const select = document.getElementById('history-week-select');
+  if (!select) return;
+  const weeksMap = new Map();
+  sales.forEach(sale => {
+    const { start, end } = getSaturdayFridayRange(sale.date);
+    weeksMap.set(start.getTime(), { start, end });
+  });
+  const weeks = Array.from(weeksMap.values()).sort((a, b) => b.start - a.start);
+  const previousValue = select.value;
+
+  let optionsHtml = '<option value="all">Toutes les ventes</option>';
+  weeks.forEach(w => {
+    const label = `Semaine du ${w.start.toLocaleDateString('fr-FR', { day: '2-digit', month: '2-digit' })} au ${w.end.toLocaleDateString('fr-FR', { day: '2-digit', month: '2-digit' })}`;
+    optionsHtml += `<option value="${w.start.getTime()}">${label}</option>`;
+  });
+  select.innerHTML = optionsHtml;
+  select.value = weeks.some(w => String(w.start.getTime()) === previousValue) ? previousValue : 'all';
+  refreshDropdownUI(select);
+}
+
+function renderSalesSummary(filter) {
+  const summaryContainer = document.getElementById('sales-summary-container');
+  if (!summaryContainer) return;
+  const allSales = getSales();
+  let filteredSales = allSales;
+
+  if (filter && filter.type === 'week') {
+    const { start, end } = getSaturdayFridayRange(parseInt(filter.value, 10));
+    filteredSales = allSales.filter(s => { const d = new Date(s.date); return d >= start && d <= end; });
+  } else if (filter && filter.type === 'custom') {
+    filteredSales = allSales.filter(s => { const d = new Date(s.date); return d >= filter.start && d <= filter.end; });
+  }  else if (filter && filter.type === 'days') {
+    filteredSales = allSales.filter(s => filter.keys.has(toDateKey(new Date(s.date))));
+  }
+
+  const totalMilk = filteredSales.reduce((sum, s) => sum + (parseFloat(s.milkQty) || 0), 0);
+  const totalLben = filteredSales.reduce((sum, s) => sum + (parseFloat(s.lbenQty) || 0), 0);
+  const totalMoney = filteredSales.reduce((sum, s) => sum + (parseFloat(s.totalAmount) || 0), 0);
+  const totalPaidMoney = filteredSales.reduce((sum, s) => sum + (parseFloat(s.paidAmount) || 0), 0);
+  const totalLeftMoney = Math.max(0, totalMoney - totalPaidMoney);
+
+  summaryContainer.innerHTML = `
+    <div class="card">
+      <h2>Résumé</h2>
+      <div class="money-strip">
+        <div class="money-block"><span class="money-block__label">Lait vendu</span><span class="money-block__figure">${totalMilk}</span></div>
+        <div class="money-block"><span class="money-block__label">Lben vendu</span><span class="money-block__figure">${totalLben}</span></div>
+      </div>
+      <div class="money-strip" style="margin-top:10px;">
+        <div class="money-block money-block--paid"><span class="money-block__label">Total payé</span><span class="money-block__figure">${formatMoney(totalPaidMoney)}</span></div>
+        <div class="money-block money-block--left"><span class="money-block__label">Reste à payer</span><span class="money-block__figure">${formatMoney(totalLeftMoney)}</span></div>
+      </div>
+    </div>`;
+}
+
+const selectedHistoryDays = new Set(); // 'YYYY-MM-DD' strings
+
+// CHANGE THIS: Update to safe local time + invalid date guard
+function toDateKey(date) {
+  if (!date) return '';
+  const d = new Date(date);
+  if (isNaN(d.getTime())) return '';
+
+  const year = d.getFullYear();
+  const month = String(d.getMonth() + 1).padStart(2, '0');
+  const day = String(d.getDate()).padStart(2, '0');
+  return `${year}-${month}-${day}`;
+}
+
+function buildDayStrip(daysBack = 90) {
+  const strip = document.getElementById('day-strip');
+  if (!strip) return;
+
+  // 1. ONE-TIME STEP: Build the buttons only if they haven't been built yet
+  if (strip.dataset.built !== 'true') {
+    strip.dataset.built = 'true';
+
+    const today = new Date(); today.setHours(0, 0, 0, 0);
+    let html = '';
+
+    for (let i = daysBack; i >= 0; i--) {
+      const d = new Date(today);
+      d.setDate(today.getDate() - i);
+      const key = toDateKey(d);
+      const dayName = d.toLocaleDateString('fr-FR', { weekday: 'short' });
+      const dayNum = d.getDate();
+      const monthName = d.toLocaleDateString('fr-FR', { month: 'short' });
+
+      // Note the backticks used here to wrap the HTML string
+      html += `<button type="button" class="day-square" data-date="${key}">
+        <span class="day-square__name">${dayName}</span>
+        <span class="day-square__num">${dayNum}</span>
+        <span class="day-square__month">${monthName}</span>
+      </button>`;
+    }
+
+    strip.innerHTML = html;
+
+    strip.querySelectorAll('.day-square').forEach(btn => {
+      btn.addEventListener('click', () => {
+        const key = btn.dataset.date;
+        if (selectedHistoryDays.has(key)) {
+          selectedHistoryDays.delete(key);
+          btn.classList.remove('selected');
+        } else {
+          selectedHistoryDays.add(key);
+          btn.classList.add('selected');
+        }
+        activeSummaryFilter = selectedHistoryDays.size > 0 ? { type: 'days', keys: selectedHistoryDays } : { type: 'all' };
+        renderSalesSummary(activeSummaryFilter);
+      });
+    });
+  }
+
+  // 2. EVERY-TIME STEP: Calculate scroll to the current week
+  requestAnimationFrame(() => {
+    const { start } = getSaturdayFridayRange(new Date());
+    const startKey = toDateKey(start);
+    
+    // Note the backticks inside the querySelector
+    const startBtn = strip.querySelector(`.day-square[data-date="${startKey}"]`);
+    
+    if (startBtn) {
+      strip.scrollLeft = startBtn.offsetLeft - 8;
+    }
+  });
+}
+
 // --- HISTORY SCREEN INTERFACE ---
 function renderHistoryScreen() {
   const container = document.getElementById('history-container');
@@ -844,6 +991,40 @@ function renderHistoryScreen() {
   const sales = getSales();
   const allClients = getClients();
 
+    buildDayStrip();
+
+  // Overall totals summary (with week filter)
+  populateHistoryWeekSelect(sales);
+  const weekSelect = document.getElementById('history-week-select');
+  const startDateInput = document.getElementById('history-start-date');
+  const endDateInput = document.getElementById('history-end-date');
+  const applyRangeBtn = document.getElementById('apply-custom-range-btn');
+
+  renderSalesSummary(activeSummaryFilter);
+
+  if (weekSelect && !weekSelect.dataset.listenerAttached) {
+    weekSelect.dataset.listenerAttached = 'true';
+    weekSelect.addEventListener('change', () => {
+      activeSummaryFilter = weekSelect.value === 'all' ? { type: 'all' } : { type: 'week', value: weekSelect.value };
+      if (startDateInput) startDateInput.value = '';
+      if (endDateInput) endDateInput.value = '';
+      renderSalesSummary(activeSummaryFilter);
+    });
+  }
+
+  if (applyRangeBtn && !applyRangeBtn.dataset.listenerAttached) {
+    applyRangeBtn.dataset.listenerAttached = 'true';
+    applyRangeBtn.addEventListener('click', () => {
+      if (!startDateInput.value || !endDateInput.value) return;
+      const start = new Date(startDateInput.value); start.setHours(0, 0, 0, 0);
+      const end = new Date(endDateInput.value); end.setHours(23, 59, 59, 999);
+      if (start > end) { alert('La date de début doit être avant la date de fin.'); return; }
+      activeSummaryFilter = { type: 'custom', start, end };
+      weekSelect.value = 'all';
+      refreshDropdownUI(weekSelect);
+      renderSalesSummary(activeSummaryFilter);
+    });
+  }
   // Debt summary
   const debtMap = {};
   sales.forEach(sale => { debtMap[sale.clientId] = (debtMap[sale.clientId] || 0) + ((parseFloat(sale.totalAmount) || 0) - (parseFloat(sale.paidAmount) || 0)); });

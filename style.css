@@ -1206,3 +1206,49 @@ html[data-text-size="xlarge"] .empty-reminders,
 html[data-text-size="xlarge"] .empty-state {
   font-size: 1.30em; /* Scales 30% relative to base size */
 }
+
+
+@media (max-width: 480px) {
+  .custom-range-row { flex-direction: column; align-items: stretch; }
+  .custom-range-row input,
+  .custom-range-row button { flex: none; width: 100%; }
+}
+
+
+.day-strip-wrapper {
+  margin: 10px 0 14px;
+  overflow: hidden;
+}
+.day-strip {
+  display: flex;
+  gap: 8px;
+  overflow-x: auto;
+  padding: 4px 2px 8px;
+  scroll-behavior: smooth;
+}
+.day-square {
+  flex: 0 0 auto;
+  width: 52px;
+  padding: 8px 4px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 2px;
+  border: 1px solid var(--border-color);
+  border-radius: 12px;
+  background: #fff;
+  font-family: inherit;
+  cursor: pointer;
+}
+.day-square__name { font-size: 11px; font-weight: 700; color: var(--text-muted); text-transform: capitalize; }
+.day-square__num { font-size: 16px; font-weight: 800; color: var(--text-dark); }
+.day-square__month { font-size: 10px; font-weight: 600; color: var(--text-muted); text-transform: capitalize; }
+.day-square.selected {
+  background: var(--primary);
+  border-color: var(--primary);
+}
+.day-square.selected .day-square__name,
+.day-square.selected .day-square__num,
+.day-square.selected .day-square__month {
+  color: #fff;
+}
