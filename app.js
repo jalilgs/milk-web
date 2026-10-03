@@ -418,6 +418,7 @@ function createClientCardElement(client, salesForDay) {
         saleToUpdate.paidAmount = (parseFloat(saleToUpdate.paidAmount) || 0) + outstanding;
         saveSales(allSales);
         renderDailyClients();
+        renderDailyStockUI();
       }
     };
   }
