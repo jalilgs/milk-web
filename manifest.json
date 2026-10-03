@@ -1,6 +1,6 @@
 {
-  "name": "Milk Manager",
-  "short_name": "Milk Manager",
+  "name": "MilkTrack",
+  "short_name": "MTrack",
   "description": "Gestion des livraisons, clients et ventes",
   "start_url": "./index.html",
   "scope": "./",
