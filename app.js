@@ -14,6 +14,9 @@ function escapeHtml(str) {
 
 let activeSummaryFilter = { type: 'all' };
 
+let historyNeedsRefresh = true;
+
+
 // --- CUSTOM DROPDOWN (fully-styled replacement for native <select>) ---
 function initCustomDropdown(select) {
   if (!select || select.dataset.customized === 'true') return;
@@ -123,14 +126,16 @@ buttons.forEach((button) => {
   button.addEventListener('click', () => {
     showScreen(button.dataset.target);
     
-    // NEW: Re-run the strip logic when the History tab becomes visible
-    // Because of the 'dataset.built' guard, it won't rebuild the HTML, 
-    // it will just fire the scroll calculation now that offsetLeft is measurable.
     if (button.dataset.target === 'history-screen') {
+      if (historyNeedsRefresh) {
+        renderHistoryScreen();
+        historyNeedsRefresh = false;
+      }
       buildDayStrip();
     }
   });
 });
+
 // --- TODAY'S DATE LABEL ---
 const todayDateLabel = document.getElementById('today-date-label');
 if (todayDateLabel) {
@@ -419,6 +424,7 @@ function createClientCardElement(client, salesForDay) {
         saveSales(allSales);
         renderDailyClients();
         renderDailyStockUI();
+        historyNeedsRefresh = true;
       }
     };
   }
@@ -694,8 +700,8 @@ document.getElementById('save-sale-btn')?.addEventListener('click', () => {
 
   saveSales(salesArray);
   renderDailyClients();
-  renderHistoryScreen();
   renderDailyStockUI();
+  historyNeedsRefresh = true;
   saleModal.classList.remove('active');
 });
 
@@ -1134,7 +1140,7 @@ document.getElementById('import-data-input')?.addEventListener('change', (e) => 
     if (data.dailyStock) localStorage.setItem('milk_app_daily_stock', JSON.stringify(data.dailyStock));
     if (data.groups) saveGroups(data.groups);
 
-    loadPricesUI(); renderManageClients(); renderDailyClients(); renderHistoryScreen(); renderDailyStockUI(); renderGroupsUI(); populateClientGroupDropdown();
+    loadPricesUI(); renderManageClients(); renderDailyClients(); renderHistoryScreen();     historyNeedsRefresh = false; renderDailyStockUI(); renderGroupsUI(); populateClientGroupDropdown();
     alert('Sauvegarde restaurée avec succès.');
   };
   reader.readAsText(file);
@@ -1151,3 +1157,11 @@ renderHistoryScreen();
 renderDailyStockUI();
 renderGroupsUI();
 populateClientGroupDropdown();
+
+if ('serviceWorker' in navigator) {
+  window.addEventListener('load', () => {
+    navigator.serviceWorker.register('sw.js').catch((err) => {
+      console.error('Service worker registration failed:', err);
+    });
+  });
+}
