@@ -565,7 +565,7 @@ button:focus-visible {
 
 .modal-actions { display: flex; gap: 12px; margin-top: 24px; }
 
-/* --- 10. QUANTITY CONTROLS --- */
+/* --- 10. QUANTITY CONTROLS ---
 .qty-control { display: flex; align-items: center; gap: 8px; }
 .qty-control input {
   width: 56px !important;
@@ -591,7 +591,110 @@ button:focus-visible {
   -webkit-appearance: none;
   margin: 0;
 }
+.qty-control input[type=number] { -moz-appearance: textfield; } */
+
+/* --- 10. QUANTITY CONTROLS & SUGGESTIONS --- */
+.qty-control { 
+  display: flex; 
+  align-items: center; 
+  gap: 8px; 
+  /* CRUCIAL : Permet aux suggestions de se positionner par rapport à ce conteneur */
+  position: relative; 
+}
+
+.qty-control input {
+  width: 56px !important;
+  text-align: center;
+  padding: 10px 4px !important;
+  font-weight: 700;
+  font-variant-numeric: tabular-nums;
+  border-color: var(--border-color);
+  background: #fff;
+}
+
+.qty-btn {
+  width: 36px;
+  height: 36px;
+  background: var(--bg-alt);
+  color: var(--text-dark);
+  border: 1px solid var(--border-color);
+  border-radius: var(--radius-pill);
+  font-size: 18px;
+  font-weight: 700;
+}
+.qty-btn:active { background: var(--border-color); }
+
+.qty-control input[type=number]::-webkit-inner-spin-button,
+.qty-control input[type=number]::-webkit-outer-spin-button {
+  -webkit-appearance: none;
+  margin: 0;
+}
 .qty-control input[type=number] { -moz-appearance: textfield; }
+
+/* Styles pour la bulle de suggestions */
+.qty-suggestions {
+  display: none; /* Caché par défaut */
+  position: absolute;
+  /* Positionne le bas de la bulle juste au-dessus du champ (ajustez 12px selon vos besoins) */
+  bottom: calc(100% + 12px); 
+  left: 50%;
+  transform: translateX(-50%);
+  gap: 6px;
+  padding: 8px;
+  /* Couleurs : Fond gris foncé */
+  background: #4a4f4b; 
+  border-radius: 10px;
+  z-index: 20;
+  white-space: nowrap;
+  box-shadow: var(--shadow-md);
+  opacity: 0;
+  transition: opacity 0.2s ease, transform 0.2s ease;
+}
+
+/* Classe affichée par JS */
+.qty-suggestions.visible {
+  display: flex;
+  opacity: 1;
+  /* Légère animation de remontée */
+  transform: translateX(-50%) translateY(0); 
+}
+
+/* Position initiale pour l'animation */
+.qty-suggestions:not(.visible) {
+    transform: translateX(-50%) translateY(5px);
+}
+
+
+/* La pointe de la bulle (tail) */
+.qty-suggestions::after {
+  content: '';
+  position: absolute;
+  top: 100%; /* Au bas du conteneur gris foncé */
+  left: 50%;
+  transform: translateX(-50%);
+  border: 7px solid transparent;
+  /* Crée un triangle pointant vers le bas avec la couleur du fond */
+  border-top-color: #4a4f4b; 
+}
+
+/* Les puces de suggestion (boutons) */
+.qty-suggestion-chip {
+  padding: 6px 14px;
+  font-size: 13px;
+  font-weight: 700;
+  font-variant-numeric: tabular-nums;
+  border: none;
+  border-radius: 8px;
+  /* Couleurs : Fond gris clair, texte foncé */
+  background: #e1e3e0; 
+  color: #2f3733;
+  cursor: pointer;
+  transition: background 0.1s ease;
+}
+
+.qty-suggestion-chip:active {
+  background: #d2d5d1;
+}
 
 /* --- 11. REMINDER CLOUDS --- */
 .reminder-cloud {
@@ -1260,23 +1363,39 @@ html[data-text-size="xlarge"] .empty-state {
 
 .qty-suggestions {
   display: none;
-  justify-content: flex-end;
+  position: absolute;
+  bottom: calc(100% + 10px);
+  left: 50%;
+  transform: translateX(-50%);
   gap: 6px;
-  margin: 0 0 8px;
+  padding: 6px;
+  background: #3a3f3b;
+  border-radius: 10px;
+  z-index: 20;
+  white-space: nowrap;
 }
 .qty-suggestions.visible {
   display: flex;
 }
+.qty-suggestions::after {
+  content: '';
+  position: absolute;
+  top: 100%;
+  left: 50%;
+  transform: translateX(-50%);
+  border: 6px solid transparent;
+  border-top-color: #3a3f3b;
+}
 .qty-suggestion-chip {
-  padding: 4px 12px;
+  padding: 5px 12px;
   font-size: 12px;
   font-weight: 700;
   font-variant-numeric: tabular-nums;
-  border: 1px solid var(--border-color);
-  border-radius: var(--radius-pill);
-  background: var(--bg-alt);
+  border: none;
+  border-radius: 8px;
+  background: #e5e7e4;
   color: var(--text-dark);
 }
 .qty-suggestion-chip:active {
-  background: var(--border-color);
+  background: #d2d5d1;
 }
