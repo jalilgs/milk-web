@@ -1256,3 +1256,27 @@ html[data-text-size="xlarge"] .empty-state {
 .modal-actions--top {
   margin-bottom: 16px;
 }
+
+
+.qty-suggestions {
+  display: none;
+  justify-content: flex-end;
+  gap: 6px;
+  margin: 0 0 8px;
+}
+.qty-suggestions.visible {
+  display: flex;
+}
+.qty-suggestion-chip {
+  padding: 4px 12px;
+  font-size: 12px;
+  font-weight: 700;
+  font-variant-numeric: tabular-nums;
+  border: 1px solid var(--border-color);
+  border-radius: var(--radius-pill);
+  background: var(--bg-alt);
+  color: var(--text-dark);
+}
+.qty-suggestion-chip:active {
+  background: var(--border-color);
+}

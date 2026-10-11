@@ -450,6 +450,14 @@ const remainingMoneyLabel = document.getElementById('sale-remaining-money');
 const tomorrowMilkInput = document.getElementById('sale-tomorrow-milk');
 const tomorrowLbenInput = document.getElementById('sale-tomorrow-lben');
 
+milkQtyInput.addEventListener('focus', () => {
+  const container = document.getElementById('milk-qty-suggestions');
+  if (container && container.innerHTML.trim() !== '') container.classList.add('visible');
+});
+milkQtyInput.addEventListener('blur', () => {
+  document.getElementById('milk-qty-suggestions')?.classList.remove('visible');
+});
+
 function getGroupMoneyStats(groupClients, todaySales) {
   const ids = new Set(groupClients.map(c => String(c.id)));
   let total = 0, paid = 0;
@@ -575,6 +583,34 @@ function updateCalculations() {
   if (remainingMoneyLabel) remainingMoneyLabel.textContent = formatMoney(remainingMoney);
 }
 
+function getRecentQuantities(pastSales, field) {
+  const values = [];
+  for (const sale of pastSales) {
+    if (isToday(sale.date)) continue;
+    const qty = parseFloat(sale[field]) || 0;
+    if (qty <= 0 || values.includes(qty)) continue;
+    values.push(qty);
+    if (values.length === 2) break;
+  }
+  return values;
+}
+
+function renderQtySuggestions(containerId, values, inputEl) {
+  const container = document.getElementById(containerId);
+  if (!container) return;
+  container.classList.remove('visible');
+  if (values.length === 0) { container.innerHTML = ''; return; }
+  container.innerHTML = values.map(v => `<button type="button" class="qty-suggestion-chip">${v}</button>`).join('');
+  container.querySelectorAll('.qty-suggestion-chip').forEach((btn, i) => {
+    btn.addEventListener('pointerdown', (e) => {
+      e.preventDefault();
+      inputEl.value = values[i];
+      updateCalculations();
+      container.classList.remove('visible');
+    });
+  });
+}
+
 function openSaleModal(clientId, clientName) {
   currentSelectedClientId = clientId;
   if (document.getElementById('modal-client-name')) document.getElementById('modal-client-name').textContent = clientName;
@@ -595,6 +631,8 @@ function openSaleModal(clientId, clientName) {
   clearPastCratesFlag = false;
   clearPastDebtFlag = false;
   lastSaleIdForCrates = lastSale ? lastSale.id : null;
+
+  renderQtySuggestions('milk-qty-suggestions', getRecentQuantities(pastSales, 'milkQty'), milkQtyInput);
 
   const remindersContainer = document.getElementById('modal-reminders');
   if (remindersContainer) {
