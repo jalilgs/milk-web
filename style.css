@@ -1252,3 +1252,7 @@ html[data-text-size="xlarge"] .empty-state {
 .day-square.selected .day-square__month {
   color: #fff;
 }
+
+.modal-actions--top {
+  margin-bottom: 16px;
+}

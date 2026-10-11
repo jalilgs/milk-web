@@ -647,6 +647,13 @@ document.getElementById('full-pay-btn')?.addEventListener('click', () => {
   updateCalculations();
 });
 
+document.getElementById('save-sale-btn-top')?.addEventListener('click', () => {
+  document.getElementById('save-sale-btn')?.click();
+});
+document.getElementById('cancel-sale-btn-top')?.addEventListener('click', () => {
+  document.getElementById('cancel-sale-btn')?.click();
+});
+
 document.getElementById('cancel-sale-btn')?.addEventListener('click', () => {
   saleModal.classList.remove('active');
   currentSelectedClientId = currentSaleId = null;
