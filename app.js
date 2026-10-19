@@ -1106,11 +1106,15 @@ function renderHistoryScreen() {
   sales.sort((a, b) => new Date(b.date) - new Date(a.date));
   const tree = new Map();
   sales.forEach(sale => {
-    const d = new Date(sale.date);
-    const year = d.getFullYear().toString(), month = d.toLocaleString('fr-FR', { month: 'long' });
-    const diff = d.getDate() - d.getDay() + (d.getDay() === 0 ? -6 : 1);
-    const monday = new Date(d); monday.setDate(diff);
-    const week = `Semaine du ${monday.toLocaleDateString('fr-FR', { month: 'short', day: 'numeric' })}`;
+  const d = new Date(sale.date);
+  const year = d.getFullYear().toString();
+  const month = d.toLocaleString('fr-FR', { month: 'long' });
+
+  const { start } = getSaturdayFridayRange(sale.date);
+  const week = `Semaine du ${start.toLocaleDateString('fr-FR', {
+    month: 'short',
+    day: 'numeric'
+  })}`;
     const day = d.toLocaleDateString('fr-FR', { weekday: 'short', month: 'short', day: 'numeric' });
 
     if (!tree.has(year)) tree.set(year, new Map());
@@ -1194,6 +1198,204 @@ document.getElementById('import-data-input')?.addEventListener('change', (e) => 
 
 
 
+// --- WEEKLY BACKUP REMINDER ---
+(() => {
+  const LAST_BACKUP_KEY = 'milk_app_last_confirmed_backup_date';
+  const POSTPONED_KEY = 'milk_app_backup_postponed_until';
+
+  function getThursday(date) {
+    const d = new Date(date);
+    d.setHours(0, 0, 0, 0);
+    d.setDate(d.getDate() - ((d.getDay() - 4 + 7) % 7));
+    return d;
+  }
+
+  function dateKey(date) {
+    return date.toISOString().slice(0, 10);
+  }
+
+  function shouldAskForBackup() {
+    const now = new Date();
+    const thisThursday = getThursday(now);
+
+    // Don't remind before Thursday
+    if (now < thisThursday) return false;
+
+    const postponedUntil = localStorage.getItem(POSTPONED_KEY);
+
+    if (postponedUntil && dateKey(now) < postponedUntil) {
+      return false;
+    }
+
+    if (postponedUntil && dateKey(now) >= postponedUntil) {
+      localStorage.removeItem(POSTPONED_KEY);
+    }
+
+    const lastBackup = localStorage.getItem(LAST_BACKUP_KEY);
+
+    return !lastBackup || lastBackup < dateKey(thisThursday);
+  }
+
+  function createBackup() {
+    return {
+      exportedAt: new Date().toISOString(),
+      prices: getPrices(),
+      clients: getClients(),
+      sales: getSales(),
+      dailyStock: getDailyStockArray(),
+      groups: getGroups()
+    };
+  }
+
+  function downloadBackup() {
+    const today = dateKey(new Date());
+    const blob = new Blob(
+      [JSON.stringify(createBackup(), null, 2)],
+      { type: 'application/json' }
+    );
+
+    const url = URL.createObjectURL(blob);
+    const link = document.createElement('a');
+
+    link.href = url;
+    link.download = `milk-manager-backup-${today}.json`;
+    document.body.appendChild(link);
+    link.click();
+    link.remove();
+
+    setTimeout(() => URL.revokeObjectURL(url), 10000);
+  }
+
+  function showBackupReminder() {
+    if (!shouldAskForBackup()) return;
+    if (document.getElementById('weekly-backup-modal')) return;
+
+    const nextThursday = getThursday(new Date());
+    nextThursday.setDate(nextThursday.getDate() + 7);
+
+    const modal = document.createElement('div');
+    modal.id = 'weekly-backup-modal';
+
+    modal.innerHTML = `
+      <div class="backup-box">
+        <h2>Time for your weekly backup</h2>
+        <p>Download a backup to protect your clients, sales and stock data.</p>
+
+        <label class="backup-checkbox">
+          <input type="checkbox" id="backup-postpone">
+          Don't ask me until next Thursday
+        </label>
+
+        <div class="backup-actions">
+          <button id="backup-download">Download backup</button>
+          <button id="backup-cancel">Cancel</button>
+        </div>
+      </div>
+    `;
+
+    const style = document.createElement('style');
+    style.textContent = `
+      #weekly-backup-modal {
+        position: fixed;
+        inset: 0;
+        z-index: 99999;
+        background: rgba(0,0,0,.65);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        padding: 20px;
+      }
+      .backup-box {
+        background: var(--card-bg, #fff);
+        color: var(--text-color, #222);
+        padding: 24px;
+        border-radius: 16px;
+        width: 100%;
+        max-width: 420px;
+        box-shadow: 0 10px 40px rgba(0,0,0,.25);
+      }
+      .backup-box h2 { margin-top: 0; }
+      .backup-checkbox {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        margin: 20px 0;
+      }
+      .backup-actions {
+        display: flex;
+        gap: 10px;
+        flex-wrap: wrap;
+      }
+      .backup-actions button {
+        padding: 10px 14px;
+        border: 0;
+        border-radius: 8px;
+        cursor: pointer;
+      }
+      #backup-download {
+        background: #2f6f5e;
+        color: white;
+      }
+    `;
+
+    document.head.appendChild(style);
+    document.body.appendChild(modal);
+
+    const closeModal = () => {
+      modal.remove();
+      style.remove();
+    };
+
+    modal.querySelector('#backup-cancel').onclick = () => {
+      if (modal.querySelector('#backup-postpone').checked) {
+        localStorage.setItem(
+          POSTPONED_KEY,
+          dateKey(nextThursday)
+        );
+      }
+      closeModal();
+    };
+
+    modal.querySelector('#backup-download').onclick = () => {
+      try {
+        downloadBackup();
+
+        modal.querySelector('.backup-box').innerHTML = `
+          <h2>Was the backup saved?</h2>
+          <p>Check that the JSON file was downloaded successfully.</p>
+          <div class="backup-actions">
+            <button id="backup-confirm">Yes, the file is saved</button>
+            <button id="backup-retry">Try again</button>
+          </div>
+        `;
+
+        modal.querySelector('#backup-confirm').onclick = () => {
+          localStorage.setItem(
+            LAST_BACKUP_KEY,
+            dateKey(new Date())
+          );
+          localStorage.removeItem(POSTPONED_KEY);
+          closeModal();
+        };
+
+        modal.querySelector('#backup-retry').onclick = () => {
+          closeModal();
+          showBackupReminder();
+        };
+      } catch (error) {
+        alert('Could not download the backup. Please try again.');
+        console.error(error);
+      }
+    };
+  }
+
+  // Check when the app opens
+  if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', showBackupReminder);
+  } else {
+    showBackupReminder();
+  }
+})();
 
 // Init
 renderManageClients();
